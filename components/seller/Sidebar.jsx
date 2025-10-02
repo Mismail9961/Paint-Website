@@ -5,17 +5,18 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 const SideBar = () => {
-    const pathname = usePathname()
+    const pathname = usePathname();
     const menuItems = [
         { name: 'Add Product', path: '/seller', icon: assets.add_icon },
         { name: 'Product List', path: '/seller/product-list', icon: assets.product_list_icon },
         { name: 'Orders', path: '/seller/orders', icon: assets.order_icon },
+        { name: 'Add Paint', path: '/seller/paint-add', icon: assets.add_icon }, // ✅ new item
+        { name: 'Paint List', path: '/seller/paint-list', icon: assets.product_list_icon }, // ✅ new item
     ];
 
     return (
         <div className='md:w-64 w-16 border-r min-h-screen text-base border-gray-300 py-2 flex flex-col'>
             {menuItems.map((item) => {
-
                 const isActive = pathname === item.path;
 
                 return (
