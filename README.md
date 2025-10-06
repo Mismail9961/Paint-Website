@@ -1,8 +1,8 @@
-# ByteBazaar - A simple eCommerce website
+# Paint Website - A simple eCommerce website
 
-ByteBazaar is an open-source **Next.js eCommerce frontend** project.  
+Paint Website is an open-source **Next.js eCommerce Website** project.  
 It provides a modern, fast and customizable shopping UI.  
-This repo is **frontend only** – contributors can improve the design, add new pages, animations and more.
+This repo is **Full Stack Website** – contributors can improve the design, add new pages, animations and more.
 
 ---
 
