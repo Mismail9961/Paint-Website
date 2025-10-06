@@ -18,18 +18,18 @@ const productSchema = new mongoose.Schema(
     },
     images: {
       type: [String], // store image URLs (e.g. Cloudinary links)
-      validate: [arr => arr.length === 1, "Exactly 2 images are required"],
+      validate: [arr => arr.length === 1, "Exactly 1 image is required"],
       required: true,
     },
     createdBy: {
-      type: mongoose.Schema.Types.ObjectId, // admin who added the product
-      ref: "User",
+      type: String, // Clerk user ID
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
+const Product =
+  mongoose.models.Product || mongoose.model("Product", productSchema);
 
 export default Product;

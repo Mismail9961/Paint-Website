@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.1",
+    "axios": "^1.12.2",
     "cloudinary": "^2.7.0",
     "inngest": "^3.44.0",
     "lucide-react": "^0.544.0",
