@@ -1,38 +1,59 @@
-'use client';
+"use client";
 
-import { productsDummyData } from "@/assets/assets";
 import { useUser, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
-import { toast } from "react-hot-toast"; // ✅ import toast
+import { toast } from "react-hot-toast";
 
 export const AppContext = createContext();
-
-export const useAppContext = () => {
-  return useContext(AppContext);
-};
+export const useAppContext = () => useContext(AppContext);
 
 export const AppContextProvider = (props) => {
   const currency = process.env.NEXT_PUBLIC_CURRENCY || "PKR";
   const router = useRouter();
   const { user } = useUser();
-  const { getToken } = useAuth(); // ✅ import token helper from Clerk
+  const { getToken } = useAuth();
 
   const [products, setProducts] = useState([]);
+  const [paintProducts, setPaintProducts] = useState([]);
   const [userData, setUserData] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  // ✅ Dummy product loading
+  // ✅ Fetch normal & paint products
   const fetchProductData = async () => {
-    setProducts(productsDummyData);
+    try {
+      setLoadingProducts(true);
+      const [productRes, paintRes] = await Promise.all([
+        axios.get("/api/products/list"),
+        axios.get("/api/paintProduct/list"),
+      ]);
+
+      if (productRes.data.success) {
+        setProducts(productRes.data.data);
+      } else {
+        toast.error("Failed to load products");
+      }
+
+      if (paintRes.data.success) {
+        setPaintProducts(paintRes.data.data);
+      } else {
+        toast.error("Failed to load paint products");
+      }
+
+      setLoadingProducts(false);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Error loading products");
+      setLoadingProducts(false);
+    }
   };
 
-  // ✅ Fetch user data from backend API
+  // ✅ Fetch user data + cart
   const fetchUserData = async () => {
     try {
-      // Determine role
       if (user?.publicMetadata?.role === "seller") {
         setIsSeller(true);
       } else {
@@ -40,68 +61,122 @@ export const AppContextProvider = (props) => {
       }
 
       const token = await getToken();
-      if (!token) return; // user not authenticated
+      if (!token) return;
 
+      // Fetch user base info
       const { data } = await axios.get("/api/user/data", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      
       if (data.success) {
         setUserData(data.user);
-        setCartItems(data.user.cartItems || {});
-      } else {
-        toast.error(data.message || "Failed to load user data");
+      }
+
+      // Fetch saved cart - UPDATED PATH
+      const cartRes = await axios.get("/api/cart/get", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (cartRes.data.success) {
+        setCartItems(cartRes.data.cartItems || {});
       }
     } catch (error) {
-      toast.error(error.message || "Error fetching user data");
+      console.error("Error fetching user data:", error);
+      toast.error("Error fetching user data");
     }
   };
 
-  // ✅ Add item to cart
-  const addToCart = async (itemId) => {
-    let cartData = structuredClone(cartItems);
-    cartData[itemId] = (cartData[itemId] || 0) + 1;
-    setCartItems(cartData);
+  // ✅ Sync cart to backend (merge-safe)
+  const syncCartToServer = async (updatedCart) => {
+    try {
+      const token = await getToken();
+      
+      if (!token) {
+        console.warn("No auth token available, skipping cart sync");
+        return;
+      }
+
+      await axios.post(
+        "/api/cart/update",
+        { cartData: updatedCart },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (error) {
+      console.error("Error syncing cart:", error);
+      // Don't show toast for sync errors to avoid spam
+    }
+  };
+
+  // ✅ Add to cart
+  const addToCart = (itemId) => {
+    setCartItems((prev) => {
+      const updated = { ...prev, [itemId]: (prev[itemId] || 0) + 1 };
+      
+      // Sync to server only if user is logged in
+      if (user) {
+        syncCartToServer(updated);
+      }
+      
+      return updated;
+    });
   };
 
   // ✅ Update cart quantity
-  const updateCartQuantity = async (itemId, quantity) => {
-    let cartData = structuredClone(cartItems);
-    if (quantity === 0) {
-      delete cartData[itemId];
-    } else {
-      cartData[itemId] = quantity;
-    }
-    setCartItems(cartData);
+  const updateCartQuantity = (itemId, quantity) => {
+    setCartItems((prev) => {
+      const updated = { ...prev };
+      
+      if (quantity <= 0) {
+        delete updated[itemId];
+      } else {
+        updated[itemId] = Number(quantity);
+      }
+      
+      // Sync to server only if user is logged in
+      if (user) {
+        syncCartToServer(updated);
+      }
+      
+      return updated;
+    });
   };
 
-  // ✅ Total cart item count
-  const getCartCount = () => {
-    return Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
-  };
+  // ✅ Cart total count
+  const getCartCount = () =>
+    Object.values(cartItems).reduce((sum, qty) => sum + Number(qty), 0);
 
-  // ✅ Total cart amount
+  // ✅ Cart total amount
   const getCartAmount = () => {
-    let totalAmount = 0;
+    let total = 0;
+    
     for (const id in cartItems) {
-      const itemInfo = products.find((p) => p._id === id);
-      if (itemInfo && cartItems[id] > 0) {
-        totalAmount += itemInfo.offerPrice * cartItems[id];
+      const item =
+        products.find((p) => String(p._id) === String(id)) ||
+        paintProducts.find((p) => String(p._id) === String(id));
+      
+      if (item) {
+        const price = item.offerPrice || item.price || 0;
+        total += price * Number(cartItems[id]);
       }
     }
-    return Math.floor(totalAmount * 100) / 100;
+    
+    return Math.floor(total * 100) / 100;
   };
 
-  // ✅ Load data on mount
+  // Load products on mount
   useEffect(() => {
     fetchProductData();
   }, []);
 
+  // Load user + cart after login
   useEffect(() => {
-    if (user) fetchUserData();
+    if (user) {
+      fetchUserData();
+    }
   }, [user]);
 
   const value = {
+    getToken,
     user,
     currency,
     router,
@@ -110,6 +185,7 @@ export const AppContextProvider = (props) => {
     userData,
     fetchUserData,
     products,
+    paintProducts,
     fetchProductData,
     cartItems,
     setCartItems,
@@ -117,11 +193,10 @@ export const AppContextProvider = (props) => {
     updateCartQuantity,
     getCartCount,
     getCartAmount,
+    loadingProducts,
   };
 
   return (
-    <AppContext.Provider value={value}>
-      {props.children}
-    </AppContext.Provider>
+    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
   );
 };
