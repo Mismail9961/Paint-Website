@@ -4,7 +4,8 @@ import {
   syncUserCreation,
   syncUserUpdation,
   syncUserDeletion,
-  createUserOrder
+  createUserOrder,
+  createPaintOrder
 } from "@/config/inngest";
 
 // Inngest handler route: /api/inngest
@@ -15,5 +16,6 @@ export const { GET, POST, PUT } = serve({
     syncUserUpdation,
     syncUserDeletion,
     createUserOrder,
+    createPaintOrder,
   ],
 });
