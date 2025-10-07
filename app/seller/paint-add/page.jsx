@@ -10,6 +10,8 @@ const AddPaint = () => {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
   const [category, setCategory] = useState("gallon");
+  const [price, setPrice] = useState("");
+  const [offerPrice, setOfferPrice] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +22,8 @@ const AddPaint = () => {
       formData.append("description", description);
       formData.append("quantity", quantity);
       formData.append("category", category);
+      formData.append("price", price);
+      formData.append("offerPrice", offerPrice);
 
       paintImages.forEach((file) => {
         if (file) formData.append("images", file);
@@ -36,12 +40,21 @@ const AddPaint = () => {
 
       const data = await res.json();
       if (res.ok) {
-        alert("Paint product added successfully!");
+        alert("✅ Paint product added successfully!");
+        setTitle("");
+        setDescription("");
+        setQuantity("");
+        setCategory("gallon");
+        setPrice("");
+        setOfferPrice("");
+        setPaintImages([null, null]);
+        setShadeImages([null, null]);
       } else {
         alert(data.error || "Something went wrong");
       }
     } catch (err) {
       console.error("Error adding paint:", err);
+      alert("Failed to add paint product.");
     }
   };
 
@@ -70,9 +83,7 @@ const AddPaint = () => {
                 />
                 <Image
                   className="max-w-24 cursor-pointer"
-                  src={
-                    file ? URL.createObjectURL(file) : assets.upload_area
-                  }
+                  src={file ? URL.createObjectURL(file) : assets.upload_area}
                   alt="Paint image"
                   width={100}
                   height={100}
@@ -101,9 +112,7 @@ const AddPaint = () => {
                 />
                 <Image
                   className="max-w-24 cursor-pointer"
-                  src={
-                    file ? URL.createObjectURL(file) : assets.upload_area
-                  }
+                  src={file ? URL.createObjectURL(file) : assets.upload_area}
                   alt="Shade image"
                   width={100}
                   height={100}
@@ -175,6 +184,37 @@ const AddPaint = () => {
               <option value="drum">Drum</option>
               <option value="quarter">Quarter</option>
             </select>
+          </div>
+        </div>
+
+        {/* Price & Offer Price */}
+        <div className="flex items-center gap-5 flex-wrap">
+          <div className="flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="price">
+              Price (PKR)
+            </label>
+            <input
+              id="price"
+              type="number"
+              placeholder="0"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setPrice(e.target.value)}
+              value={price}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="offerPrice">
+              Offer Price (PKR)
+            </label>
+            <input
+              id="offerPrice"
+              type="number"
+              placeholder="0"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setOfferPrice(e.target.value)}
+              value={offerPrice}
+            />
           </div>
         </div>
 

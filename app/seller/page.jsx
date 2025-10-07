@@ -1,13 +1,16 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { assets } from "@/assets/assets"; // make sure upload_area is defined here
+import axios from "axios";
+import { assets } from "@/assets/assets"; // ensure upload_area exists here
 
 const AddProduct = () => {
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [price, setPrice] = useState("");
+  const [offerPrice, setOfferPrice] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -23,31 +26,34 @@ const AddProduct = () => {
         return;
       }
 
+      // ✅ Prepare form data
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
       formData.append("quantity", quantity);
+      formData.append("price", price);
+      if (offerPrice) formData.append("offerPrice", offerPrice);
       formData.append("images", image);
 
-      const res = await fetch("/api/products/add", {
-        method: "POST",
-        body: formData,
+      // ✅ Send data to API
+      const { data } = await axios.post("/api/products/add", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to add product");
-      }
 
       setMessage("✅ Product added successfully!");
       setTitle("");
       setDescription("");
       setQuantity("");
+      setPrice("");
+      setOfferPrice("");
       setImage(null);
     } catch (err) {
       console.error("Error adding product:", err);
-      setMessage("❌ " + err.message);
+      const errMsg =
+        err.response?.data?.error || err.message || "Something went wrong";
+      setMessage("❌ " + errMsg);
     } finally {
       setLoading(false);
     }
@@ -114,8 +120,9 @@ const AddProduct = () => {
           />
         </div>
 
-        {/* Quantity */}
+        {/* Quantity / Price / Offer Price */}
         <div className="flex items-center gap-5 flex-wrap">
+          {/* Quantity */}
           <div className="flex flex-col gap-1 w-32">
             <label className="text-base font-medium" htmlFor="quantity">
               Quantity
@@ -128,6 +135,37 @@ const AddProduct = () => {
               onChange={(e) => setQuantity(e.target.value)}
               value={quantity}
               required
+            />
+          </div>
+
+          {/* Price */}
+          <div className="flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="price">
+              Price
+            </label>
+            <input
+              id="price"
+              type="number"
+              placeholder="0"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setPrice(e.target.value)}
+              value={price}
+              required
+            />
+          </div>
+
+          {/* Offer Price */}
+          <div className="flex flex-col gap-1 w-32">
+            <label className="text-base font-medium" htmlFor="offerPrice">
+              Offer Price
+            </label>
+            <input
+              id="offerPrice"
+              type="number"
+              placeholder="(optional)"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
+              onChange={(e) => setOfferPrice(e.target.value)}
+              value={offerPrice}
             />
           </div>
         </div>

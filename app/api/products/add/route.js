@@ -24,13 +24,17 @@ export async function POST(request) {
     const title = formData.get("title");
     const description = formData.get("description");
     const quantity = formData.get("quantity");
-
+    const price = formData.get("price");
+    const offerPrice = formData.get("offerPrice");
     const imageFiles = formData.getAll("images");
 
     // ✅ Validate required fields
-    if (!title || !description || !quantity) {
+    if (!title || !description || !quantity || !price) {
       return NextResponse.json(
-        { error: "All fields (title, description, quantity) are required" },
+        {
+          error:
+            "All fields (title, description, quantity, and price) are required",
+        },
         { status: 400 }
       );
     }
@@ -43,7 +47,27 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Helper to upload image to Cloudinary
+    // ✅ Convert numeric values
+    const numericQuantity = Number(quantity);
+    const numericPrice = Number(price);
+    const numericOfferPrice = offerPrice ? Number(offerPrice) : null;
+
+    // ✅ Price validations
+    if (isNaN(numericPrice) || numericPrice <= 0) {
+      return NextResponse.json(
+        { error: "Price must be a positive number" },
+        { status: 400 }
+      );
+    }
+
+    if (numericOfferPrice && numericOfferPrice >= numericPrice) {
+      return NextResponse.json(
+        { error: "Offer price must be less than the original price" },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Helper: upload image to Cloudinary
     const uploadToCloudinary = async (file) => {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -69,9 +93,11 @@ export async function POST(request) {
     const newProduct = await Product.create({
       title,
       description,
-      quantity: Number(quantity),
+      quantity: numericQuantity,
+      price: numericPrice,
+      offerPrice: numericOfferPrice,
       images: uploadResults.map((r) => r.secure_url),
-      createdBy: userId, // Clerk user ID
+      createdBy: userId,
     });
 
     return NextResponse.json({

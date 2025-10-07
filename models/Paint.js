@@ -5,6 +5,7 @@ const paintProductSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     quantity: { type: Number, required: true, min: 0 },
+
     images: {
       type: [String],
       validate: {
@@ -13,11 +14,13 @@ const paintProductSchema = new mongoose.Schema(
       },
       required: true,
     },
+
     category: {
       type: String,
       enum: ["gallon", "drum", "quarter"],
       required: true,
     },
+
     shadeCardImages: {
       type: [String],
       validate: {
@@ -26,8 +29,27 @@ const paintProductSchema = new mongoose.Schema(
       },
       required: true,
     },
+
+    price: {
+      type: Number,
+      required: true,
+      min: [0, "Price cannot be negative"],
+    },
+
+    offerPrice: {
+      type: Number,
+      min: [0, "Offer price cannot be negative"],
+      validate: {
+        validator: function (value) {
+          // Only validate if offerPrice is provided
+          return value == null || value < this.price;
+        },
+        message: "Offer price must be less than the original price",
+      },
+    },
+
     createdBy: {
-      type: String, // ✅ Clerk userId is a string
+      type: String, // Clerk userId
       ref: "User",
       required: true,
     },
