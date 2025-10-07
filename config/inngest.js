@@ -2,6 +2,8 @@ import User from "@/models/User";
 import Order from "@/models/Order";
 import { Inngest } from "inngest";
 import connectDB from "./db";
+import PaintOrder from "@/models/PaintOrder";
+
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "quickcart-next" });
@@ -146,4 +148,56 @@ export const createUserOrder = inngest.createFunction(
         throw new Error(`Failed to create orders: ${error.message}`);
       }
     }
-  );
+);
+
+export const createPaintOrder = inngest.createFunction(
+  {
+    id: "create-paint-order",
+    batchEvents: {
+      maxSize: 5, // process up to 5 orders together
+      timeout: "5s",
+    },
+  },
+  { event: "paintOrder/created" }, // 👈 event name
+  async ({ events }) => {
+    try {
+      await connectDB();
+
+      console.log("🎨 INNGEST: Processing", events.length, "paint order events");
+
+      // Map incoming paint order events
+      const paintOrders = events.map((event) => ({
+        userId: event.data.userId,
+        items: event.data.items.map((item) => ({
+          paintProduct: item.paintProduct,
+          shadeNumber: item.shadeNumber, // 👈 user-entered shade
+          quantity: item.quantity,
+          price: item.price,
+          offerPrice: item.offerPrice || 0,
+        })),
+        amount: event.data.amount,
+        address: event.data.address,
+        date: new Date(event.data.date || Date.now()),
+        status: event.data.status || "Order Placed",
+      }));
+
+      // Insert all paint orders into the database
+      const insertedOrders = await PaintOrder.insertMany(paintOrders);
+
+      console.log("✅ INNGEST: Created", insertedOrders.length, "paint orders");
+      console.log(
+        "🧾 INNGEST: Paint Order IDs:",
+        insertedOrders.map((o) => o._id)
+      );
+
+      return {
+        success: true,
+        processed: insertedOrders.length,
+        orderIds: insertedOrders.map((o) => o._id),
+      };
+    } catch (error) {
+      console.error("❌ INNGEST: Error creating paint orders:", error);
+      throw new Error(`Failed to create paint orders: ${error.message}`);
+    }
+  }
+);
