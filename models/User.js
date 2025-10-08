@@ -6,7 +6,17 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     imageUrl: { type: String, required: false, default: "" }, // fallback if Clerk didn’t send
-    cartItems: { type: Object, default: {} }, // singular, matches your DB
+    cartItems: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "PaintProduct",
+          required: true,
+        },
+        quantity: { type: Number, default: 1 },
+        shadeNumber: { type: String, default: "" },
+      },
+    ],
   },
   { minimize: false }
 );

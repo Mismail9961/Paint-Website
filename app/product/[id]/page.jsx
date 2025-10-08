@@ -15,149 +15,119 @@ const Product = () => {
 
   const [productData, setProductData] = useState(null);
   const [mainImage, setMainImage] = useState(null);
+  const [isPaintProduct, setIsPaintProduct] = useState(false);
+  const [showShadeModal, setShowShadeModal] = useState(false);
+  const [shadeNumber, setShadeNumber] = useState("");
 
   useEffect(() => {
     if (!id || (!products.length && !paintProducts.length)) return;
 
-    const foundProduct =
-      products.find((p) => p._id === id) ||
-      paintProducts.find((p) => p._id === id);
+    const foundNormal = products.find((p) => p._id === id);
+    const foundPaint = paintProducts.find((p) => p._id === id);
 
-    setProductData(foundProduct || null);
+    if (foundPaint) {
+      setProductData(foundPaint);
+      setIsPaintProduct(true);
+    } else if (foundNormal) {
+      setProductData(foundNormal);
+      setIsPaintProduct(false);
+    }
   }, [id, products, paintProducts]);
 
   if (!productData) return <Loading />;
 
-  // ✅ Support both normal and paint product images
-  const images =
-    productData.images ||
-    productData.image ||
-    productData.shadeCardImages ||
-    [];
+  const images = [
+    ...(productData.images || []),
+    ...(productData.shadeCardImages || []),
+  ].filter(Boolean);
 
-  const validImages = Array.isArray(images)
-    ? images.filter((img) => img && img.trim() !== "")
-    : [];
+  const main = mainImage || images[0] || assets.placeholder;
 
-  const main = mainImage || validImages[0] || assets.placeholder;
+  const handleBuyNow = () => {
+    if (isPaintProduct) setShowShadeModal(true);
+    else {
+      addToCart(productData._id);
+      router.push("/cart");
+    }
+  };
+
+  const handleConfirmShade = () => {
+    if (!shadeNumber.trim()) {
+      alert("Please enter a shade number.");
+      return;
+    }
+    addToCart(productData._id, { shadeNumber });
+    setShowShadeModal(false);
+    router.push("/cart");
+  };
 
   return (
     <>
       <Navbar />
       <div className="px-6 md:px-16 lg:px-32 pt-14 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          {/* LEFT - IMAGES */}
+          {/* LEFT IMAGES */}
           <div className="px-5 lg:px-16 xl:px-20">
             <div className="rounded-lg overflow-hidden bg-gray-100 mb-4">
-              {main ? (
-                <Image
-                  src={main}
-                  alt={productData.name || productData.title || "Product image"}
-                  width={1280}
-                  height={720}
-                  className="w-full h-auto object-cover"
-                />
-              ) : (
-                <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center text-gray-500">
-                  No Image Available
-                </div>
-              )}
+              <Image
+                src={main}
+                alt={productData.title || productData.name}
+                width={1280}
+                height={720}
+                className="w-full h-auto object-cover"
+              />
             </div>
 
-            {validImages.length > 0 && (
-              <div className="grid grid-cols-4 gap-4">
-                {validImages.map((image, index) => (
-                  <div
-                    key={index}
-                    onClick={() => setMainImage(image)}
-                    className="cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:opacity-80"
-                  >
-                    <Image
-                      src={image}
-                      alt={`${productData.name || productData.title}-${index}`}
-                      width={300}
-                      height={300}
-                      className="w-full h-auto object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-4 gap-4">
+              {images.map((img, i) => (
+                <div
+                  key={i}
+                  onClick={() => setMainImage(img)}
+                  className="cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:opacity-80"
+                >
+                  <Image
+                    src={img}
+                    alt={`img-${i}`}
+                    width={300}
+                    height={300}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* RIGHT - DETAILS */}
+          {/* RIGHT DETAILS */}
           <div className="flex flex-col">
             <h1 className="text-3xl font-medium text-gray-800 mb-4">
-              {productData.name || productData.title}
+              {productData.title || productData.name}
             </h1>
-
-            {/* Rating */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-0.5">
-                {[...Array(4)].map((_, i) => (
-                  <Image
-                    key={i}
-                    src={assets.star_icon}
-                    alt="star"
-                    width={16}
-                    height={16}
-                    className="h-4 w-4"
-                  />
-                ))}
-                <Image
-                  src={assets.star_dull_icon}
-                  alt="star_dull"
-                  width={16}
-                  height={16}
-                  className="h-4 w-4"
-                />
-              </div>
-              <p className="text-gray-500">(4.5)</p>
-            </div>
-
             <p className="text-gray-600 mt-3">
               {productData.description || "No description available."}
             </p>
 
-            {/* Price */}
-            {productData.price || productData.offerPrice ? (
-              <p className="text-3xl font-medium mt-6">
-                ${productData.offerPrice || productData.price}
-                {productData.offerPrice && (
-                  <span className="text-base font-normal text-gray-500 line-through ml-2">
-                    ${productData.price}
-                  </span>
-                )}
-              </p>
-            ) : (
-              <p className="text-lg text-gray-500 mt-6">Price not available</p>
-            )}
+            <p className="text-3xl font-medium mt-6">
+              ${productData.offerPrice || productData.price}
+              {productData.offerPrice && (
+                <span className="text-base font-normal text-gray-500 line-through ml-2">
+                  ${productData.price}
+                </span>
+              )}
+            </p>
 
             <hr className="bg-gray-300 my-6" />
 
-            {/* Product Info */}
-            <div className="overflow-x-auto">
-              <table className="table-auto border-collapse w-full max-w-72">
-                <tbody>
-                  <tr>
-                    <td className="text-gray-600 font-medium">Brand</td>
-                    <td className="text-gray-800/70">Generic</td>
-                  </tr>
-                  <tr>
-                    <td className="text-gray-600 font-medium">Color</td>
-                    <td className="text-gray-800/70">Multi</td>
-                  </tr>
-                  <tr>
-                    <td className="text-gray-600 font-medium">Category</td>
-                    <td className="text-gray-800/70">
-                      {productData.category || "N/A"}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            {isPaintProduct && (
+              <div className="text-sm text-gray-700">
+                <p>
+                  <strong>Category:</strong> {productData.category}
+                </p>
+                <p>
+                  <strong>Quantity:</strong> {productData.quantity}
+                </p>
+              </div>
+            )}
 
-            {/* Buttons */}
             <div className="flex items-center mt-10 gap-4">
               <button
                 onClick={() => addToCart(productData._id)}
@@ -166,19 +136,16 @@ const Product = () => {
                 Add to Cart
               </button>
               <button
-                onClick={() => {
-                  addToCart(productData._id);
-                  router.push("/cart");
-                }}
+                onClick={handleBuyNow}
                 className="w-full py-3.5 bg-orange-500 text-white hover:bg-orange-600 transition"
               >
-                Buy now
+                Buy Now
               </button>
             </div>
           </div>
         </div>
 
-        {/* FEATURED PRODUCTS */}
+        {/* FEATURED */}
         <div className="flex flex-col items-center">
           <div className="flex flex-col items-center mb-4 mt-16">
             <p className="text-3xl font-medium">
@@ -192,13 +159,60 @@ const Product = () => {
               <ProductCard key={i} product={p} />
             ))}
           </div>
-
-          <button className="px-8 py-2 mb-16 border rounded text-gray-500 hover:bg-slate-50 transition">
-            See more
-          </button>
         </div>
       </div>
+
       <Footer />
+
+      {/* SHADE MODAL */}
+      {showShadeModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800 text-center">
+              Select Your Shade
+            </h2>
+            <p className="text-gray-500 text-center text-sm">
+              Enter your desired shade number from the shade cards below.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              {productData.shadeCardImages?.map((img, i) => (
+                <Image
+                  key={i}
+                  src={img}
+                  alt={`Shade ${i + 1}`}
+                  width={300}
+                  height={300}
+                  className="rounded-lg border object-cover"
+                />
+              ))}
+            </div>
+
+            <input
+              type="text"
+              placeholder="Enter Shade Number"
+              value={shadeNumber}
+              onChange={(e) => setShadeNumber(e.target.value)}
+              className="w-full border px-3 py-2 rounded mt-4 outline-none focus:ring-2 focus:ring-orange-500"
+            />
+
+            <div className="flex gap-4 mt-6">
+              <button
+                onClick={() => setShowShadeModal(false)}
+                className="w-1/2 py-2 border rounded hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmShade}
+                className="w-1/2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

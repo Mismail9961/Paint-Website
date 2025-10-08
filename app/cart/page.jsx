@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { assets } from "@/assets/assets";
 import OrderSummary from "@/components/OrderSummary";
@@ -16,7 +17,10 @@ const Cart = () => {
     addToCart,
     updateCartQuantity,
     getCartCount,
+    removeFromCart,
   } = useAppContext();
+
+  const cartKeys = Object.keys(cartItems);
 
   return (
     <>
@@ -38,17 +42,21 @@ const Cart = () => {
           {/* Cart Items */}
           <div className="space-y-4">
             <AnimatePresence>
-              {Object.keys(cartItems).map((itemId) => {
+              {cartKeys.map((itemId) => {
+                const cartItem = cartItems[itemId];
+                if (!cartItem || cartItem.quantity <= 0) return null;
+
                 const product =
                   products.find((p) => String(p._id) === String(itemId)) ||
                   paintProducts.find((p) => String(p._id) === String(itemId));
 
-                if (!product || cartItems[itemId] <= 0) return null;
+                if (!product) return null;
 
                 const imageSrc =
                   product.images?.[0] || assets.placeholder_image;
                 const title = product.title || "Unknown Product";
                 const price = product.offerPrice || product.price || 0;
+                const shadeNumber = cartItem.shadeNumber || "-";
 
                 return (
                   <motion.div
@@ -76,11 +84,21 @@ const Cart = () => {
                         {title}
                       </p>
                       <p className="text-sm text-gray-500 mt-1">
-                        ${price.toFixed(2)}
+                        Price:{" "}
+                        <span className="font-medium text-gray-700">
+                          Rs. {price.toFixed(2)}
+                        </span>
                       </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Shade:{" "}
+                        <span className="font-medium text-gray-700">
+                          {shadeNumber}
+                        </span>
+                      </p>
+
                       <button
                         className="text-xs text-red-500 mt-2 hover:underline"
-                        onClick={() => updateCartQuantity(product._id, 0)}
+                        onClick={() => removeFromCart(product._id)}
                       >
                         Remove
                       </button>
@@ -90,7 +108,7 @@ const Cart = () => {
                     <div className="flex justify-center sm:justify-start items-center gap-2">
                       <button
                         onClick={() =>
-                          updateCartQuantity(product._id, cartItems[itemId] - 1)
+                          updateCartQuantity(product._id, cartItem.quantity - 1)
                         }
                         className="p-2 rounded-md border border-gray-200 hover:bg-gray-100"
                       >
@@ -103,9 +121,12 @@ const Cart = () => {
 
                       <input
                         type="number"
-                        value={cartItems[itemId]}
+                        value={cartItem.quantity}
                         onChange={(e) =>
-                          updateCartQuantity(product._id, Number(e.target.value))
+                          updateCartQuantity(
+                            product._id,
+                            Number(e.target.value)
+                          )
                         }
                         className="w-12 text-center border rounded-md py-1 text-sm"
                         min="1"
@@ -125,7 +146,7 @@ const Cart = () => {
 
                     {/* Subtotal */}
                     <div className="text-gray-800 font-medium text-right w-full sm:w-24 mt-3 sm:mt-0">
-                      ${(price * cartItems[itemId]).toFixed(2)}
+                      Rs. {(price * cartItem.quantity).toFixed(2)}
                     </div>
                   </motion.div>
                 );
@@ -133,7 +154,7 @@ const Cart = () => {
             </AnimatePresence>
 
             {/* Empty Cart Message */}
-            {Object.keys(cartItems).length === 0 && (
+            {cartKeys.length === 0 && (
               <p className="text-center text-gray-500 mt-10">
                 Your cart is empty 🛒
               </p>
