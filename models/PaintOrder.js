@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const PaintOrderSchema = new mongoose.Schema(
   {
     userId: {
-      type: String, // Clerk user ID
+      type: String,
       required: true,
       index: true,
     },
@@ -41,6 +41,7 @@ const PaintOrderSchema = new mongoose.Schema(
         },
         offerPrice: {
           type: Number,
+          default: 0,
           min: 0,
         },
       },
@@ -54,8 +55,8 @@ const PaintOrderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      default: "Order Placed",
       enum: ["Order Placed", "Processing", "Shipped", "Delivered", "Cancelled"],
+      default: "Order Placed",
     },
 
     date: {
@@ -63,14 +64,10 @@ const PaintOrderSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-// ✅ Index for faster user & date lookups
-PaintOrderSchema.index({ userId: 1, date: -1 });
-
-const PaintOrder =
-  mongoose.models.PaintOrder ||
+export default mongoose.models.PaintOrder ||
   mongoose.model("PaintOrder", PaintOrderSchema);
-
-export default PaintOrder;

@@ -153,47 +153,39 @@ export const createUserOrder = inngest.createFunction(
 export const createPaintOrder = inngest.createFunction(
   {
     id: "create-paint-order",
-    batchEvents: {
-      maxSize: 5, // process up to 5 orders together
-      timeout: "5s",
-    },
+    batchEvents: { maxSize: 5, timeout: "5s" },
   },
-  { event: "paintOrder/created" }, // 👈 event name
+  { event: "paintOrder/created" },
   async ({ events }) => {
     try {
       await connectDB();
-
       console.log("🎨 INNGEST: Processing", events.length, "paint order events");
 
-      // Map incoming paint order events
-      const paintOrders = events.map((event) => ({
-        userId: event.data.userId,
-        items: event.data.items.map((item) => ({
-          paintProduct: item.paintProduct,
-          shadeNumber: item.shadeNumber, // 👈 user-entered shade
-          quantity: item.quantity,
-          price: item.price,
-          offerPrice: item.offerPrice || 0,
-        })),
-        amount: event.data.amount,
-        address: event.data.address,
-        date: new Date(event.data.date || Date.now()),
-        status: event.data.status || "Order Placed",
-      }));
+      const paintOrders = events.map((event) => {
+        const { userId, items, amount, address, date, status } = event.data;
+        return {
+          userId,
+          address,
+          items: items.map((i) => ({
+            paintProduct: i.paintProduct,
+            shadeNumber: i.shadeNumber || "N/A",
+            quantity: i.quantity,
+            price: i.price,
+            offerPrice: i.offerPrice || 0,
+          })),
+          amount,
+          date: new Date(date || Date.now()),
+          status: status || "Order Placed",
+        };
+      });
 
-      // Insert all paint orders into the database
-      const insertedOrders = await PaintOrder.insertMany(paintOrders);
-
-      console.log("✅ INNGEST: Created", insertedOrders.length, "paint orders");
-      console.log(
-        "🧾 INNGEST: Paint Order IDs:",
-        insertedOrders.map((o) => o._id)
-      );
+      const inserted = await PaintOrder.insertMany(paintOrders);
+      console.log("✅ INNGEST: Created", inserted.length, "paint orders");
 
       return {
         success: true,
-        processed: insertedOrders.length,
-        orderIds: insertedOrders.map((o) => o._id),
+        processed: inserted.length,
+        orderIds: inserted.map((o) => o._id),
       };
     } catch (error) {
       console.error("❌ INNGEST: Error creating paint orders:", error);
