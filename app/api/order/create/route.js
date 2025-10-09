@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/config/db";
 import Product from "@/models/Product";
-import PaintProduct from "@/models/Paint"; // ✅ correct import path
-import Address from "@/models/Address";
+import PaintProduct from "@/models/Paint";
 import User from "@/models/User";
-import PaintOrder from "@/models/PaintOrder"; // ✅ new paint order model
+import PaintOrder from "@/models/PaintOrder";
 import { getAuth } from "@clerk/nextjs/server";
 
 export async function POST(request) {
@@ -17,8 +16,6 @@ export async function POST(request) {
       );
 
     const { address, items } = await request.json();
-    console.log("📦 Received order data:", { address, items });
-
     if (!address || !Array.isArray(items) || items.length === 0)
       return NextResponse.json(
         { success: false, message: "Missing order data" },
@@ -27,7 +24,6 @@ export async function POST(request) {
 
     await connectDB();
 
-    // 🧩 Identify which are paint products
     const productIds = items.map((i) => i.product);
     const [normalProducts, paintProducts] = await Promise.all([
       Product.find({ _id: { $in: productIds } }),
@@ -36,7 +32,6 @@ export async function POST(request) {
 
     const allProducts = [...normalProducts, ...paintProducts];
 
-    // 🧾 Calculate total and prepare items array
     let totalAmount = 0;
     const orderItems = items
       .map((item) => {
@@ -48,25 +43,13 @@ export async function POST(request) {
         const price = product.offerPrice || product.price || 0;
         totalAmount += price * item.quantity;
 
-        // ✅ Detect if this is a paint product and map correctly
-        if (paintProducts.some((p) => String(p._id) === String(item.product))) {
-          return {
-            paintProduct: product._id,
-            shadeNumber: item.shadeNumber || "N/A",
-            quantity: item.quantity,
-            price,
-            offerPrice: product.offerPrice || 0,
-          };
-        } else {
-          // Normal product (fallback)
-          return {
-            paintProduct: product._id,
-            shadeNumber: "N/A",
-            quantity: item.quantity,
-            price,
-            offerPrice: product.offerPrice || 0,
-          };
-        }
+        return {
+          paintProduct: product._id,
+          shadeNumber: item.shadeNumber || "N/A",
+          quantity: item.quantity,
+          price,
+          offerPrice: product.offerPrice || 0,
+        };
       })
       .filter(Boolean);
 
@@ -76,7 +59,7 @@ export async function POST(request) {
         { status: 400 }
       );
 
-    // 🏦 Create PaintOrder
+    // ✅ Create order
     const newOrder = await PaintOrder.create({
       userId,
       address,
@@ -85,6 +68,9 @@ export async function POST(request) {
       status: "Order Placed",
       date: new Date(),
     });
+
+    // ✅ Clear user's cart automatically
+    await User.updateOne({ userId }, { $set: { cartItems: [] } });
 
     console.log("✅ Order saved:", newOrder._id);
 

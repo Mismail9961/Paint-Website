@@ -15,8 +15,22 @@ export async function POST(request) {
       );
     }
 
-    const { cartData } = await request.json();
+    const { cartData, clearCart } = await request.json();
 
+    // ✅ If clearCart = true → empty the cart
+    if (clearCart) {
+      await User.findByIdAndUpdate(
+        userId,
+        { $set: { cartItems: [] } },
+        { new: true, upsert: true }
+      );
+      return NextResponse.json({
+        success: true,
+        message: "Cart cleared successfully",
+      });
+    }
+
+    // ✅ Validate cartData
     if (!Array.isArray(cartData)) {
       return NextResponse.json(
         { success: false, message: "Invalid cart data format" },
@@ -24,9 +38,9 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Use correct field (userId) instead of clerkId
-    const updatedUser = await User.findOneAndUpdate(
-      { userId }, // ensure your schema has `userId` for Clerk users
+    // ✅ Update or create user cart
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
       {
         $set: {
           cartItems: cartData.map((item) => ({
@@ -36,7 +50,7 @@ export async function POST(request) {
           })),
         },
       },
-      { new: true, upsert: true }
+      { new: true, upsert: true } // ensures user doc is created if not exists
     );
 
     return NextResponse.json({

@@ -3,13 +3,19 @@
 import { useUser, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { toast } from "react-hot-toast";
 
 export const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
 
-export const AppContextProvider = (props) => {
+export const AppContextProvider = ({ children }) => {
   const currency = process.env.NEXT_PUBLIC_CURRENCY || "PKR";
   const router = useRouter();
   const { user } = useUser();
@@ -22,8 +28,8 @@ export const AppContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [loadingProducts, setLoadingProducts] = useState(true);
 
-  // ✅ Fetch both normal & paint products
-  const fetchProductData = async () => {
+  // ✅ Fetch all products
+  const fetchProductData = useCallback(async () => {
     try {
       setLoadingProducts(true);
       const [productRes, paintRes] = await Promise.all([
@@ -32,27 +38,23 @@ export const AppContextProvider = (props) => {
       ]);
 
       if (productRes.data.success) setProducts(productRes.data.data);
-      else toast.error("Failed to load products");
-
       if (paintRes.data.success) setPaintProducts(paintRes.data.data);
-      else toast.error("Failed to load paint products");
-
-      setLoadingProducts(false);
     } catch (error) {
       console.error("Error fetching products:", error);
       toast.error("Error loading products");
+    } finally {
       setLoadingProducts(false);
     }
-  };
+  }, []);
 
-  // ✅ Fetch user + saved cart
-  const fetchUserData = async () => {
+  // ✅ Fetch user + cart data
+  const fetchUserData = useCallback(async () => {
     try {
+      const token = await getToken();
+      if (!token || !user) return;
+
       if (user?.publicMetadata?.role === "seller") setIsSeller(true);
       else setIsSeller(false);
-
-      const token = await getToken();
-      if (!token) return;
 
       const { data } = await axios.get("/api/user/data", {
         headers: { Authorization: `Bearer ${token}` },
@@ -60,15 +62,13 @@ export const AppContextProvider = (props) => {
 
       if (data.success) setUserData(data.user);
 
-      // Fetch cart from DB
+      // Fetch saved cart
       const cartRes = await axios.get("/api/cart/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (cartRes.data.success) {
         const cartArray = cartRes.data.cartItems || [];
-
-        // 🔄 Convert array → object
         const cartObj = {};
         cartArray.forEach((item) => {
           cartObj[item.productId] = {
@@ -76,138 +76,121 @@ export const AppContextProvider = (props) => {
             shadeNumber: item.shadeNumber || "",
           };
         });
-
         setCartItems(cartObj);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
-      toast.error("Error fetching user data");
     }
-  };
+  }, [user, getToken]);
 
-  // ✅ Sync cart to backend
-  const syncCartToServer = async (updatedCart) => {
-    try {
-      const token = await getToken();
-      if (!token) return;
+  // ✅ Sync cart to DB
+  const syncCartToServer = useCallback(
+    async (updatedCart) => {
+      try {
+        const token = await getToken();
+        if (!token || !user) return;
 
-      // Convert object → array before sending
-      const cartArray = Object.entries(updatedCart).map(([productId, item]) => ({
-        productId,
-        quantity: item.quantity,
-        shadeNumber: item.shadeNumber || "",
-      }));
+        const cartArray = Object.entries(updatedCart).map(
+          ([productId, item]) => ({
+            productId,
+            quantity: item.quantity,
+            shadeNumber: item.shadeNumber || "",
+          })
+        );
 
-      await axios.post(
-        "/api/cart/update",
-        { cartData: cartArray },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } catch (error) {
-      console.error("Error syncing cart:", error);
-    }
-  };
+        await axios.post(
+          "/api/cart/update",
+          { cartData: cartArray },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (error) {
+        console.error("Error syncing cart:", error);
+      }
+    },
+    [user, getToken]
+  );
 
-  // ✅ Add to Cart (supports shadeNumber)
-  const addToCart = (productId, extraData = {}) => {
+  // ✅ Cart functions
+  const addToCart = async (productId, extraData = {}) => {
     setCartItems((prev) => {
-      const existingItem = prev[productId];
+      const existing = prev[productId];
       const updated = {
         ...prev,
         [productId]: {
-          quantity: existingItem ? existingItem.quantity + 1 : 1,
-          shadeNumber: extraData.shadeNumber || existingItem?.shadeNumber || "",
+          quantity: existing ? existing.quantity + 1 : 1,
+          shadeNumber: extraData.shadeNumber || existing?.shadeNumber || "",
         },
       };
-
       if (user) syncCartToServer(updated);
       return updated;
     });
-
     toast.success("Added to cart!");
   };
 
-  // ✅ Delete item from cart
-const removeFromCart = (productId) => {
-  setCartItems((prev) => {
-    const updated = { ...prev };
-    delete updated[productId];
-
-    if (user) syncCartToServer(updated);
-    return updated;
-  });
-
-  toast.success("Item removed from cart!");
-};
-
-
-  // ✅ Update Cart Quantity
-  const updateCartQuantity = (productId, quantity) => {
+  const removeFromCart = async (productId) => {
     setCartItems((prev) => {
       const updated = { ...prev };
+      delete updated[productId];
+      if (user) syncCartToServer(updated);
+      return updated;
+    });
+    toast.success("Item removed from cart!");
+  };
 
-      if (quantity > 0) {
-        updated[productId] = { ...prev[productId], quantity };
-      } else {
-        delete updated[productId];
-      }
-
+  const updateCartQuantity = async (productId, quantity) => {
+    setCartItems((prev) => {
+      const updated = { ...prev };
+      if (quantity > 0) updated[productId] = { ...prev[productId], quantity };
+      else delete updated[productId];
       if (user) syncCartToServer(updated);
       return updated;
     });
   };
 
-  // ✅ Cart Count
   const getCartCount = () =>
-    Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0);
+    Object.values(cartItems).reduce((sum, i) => sum + i.quantity, 0);
 
-  // ✅ Cart Total
-  const getCartAmount = () => {
-    let total = 0;
-    for (const [productId, item] of Object.entries(cartItems)) {
+  const getCartAmount = () =>
+    Object.entries(cartItems).reduce((total, [id, item]) => {
       const product =
-        products.find((p) => String(p._id) === String(productId)) ||
-        paintProducts.find((p) => String(p._id) === String(productId));
+        products.find((p) => String(p._id) === id) ||
+        paintProducts.find((p) => String(p._id) === id);
+      const price = product?.offerPrice || product?.price || 0;
+      return total + price * item.quantity;
+    }, 0);
 
-      if (product) {
-        const price = product.offerPrice || product.price || 0;
-        total += price * item.quantity;
-      }
-    }
-    return Math.floor(total * 100) / 100;
-  };
-
+  // ✅ Initial Load
   useEffect(() => {
     fetchProductData();
-  }, []);
+  }, [fetchProductData]);
 
   useEffect(() => {
     if (user) fetchUserData();
-  }, [user]);
-
-  const value = {
-    removeFromCart,
-    getToken,
-    user,
-    currency,
-    router,
-    isSeller,
-    setIsSeller,
-    userData,
-    fetchUserData,
-    products,
-    paintProducts,
-    fetchProductData,
-    cartItems,
-    setCartItems,
-    addToCart,
-    updateCartQuantity,
-    getCartCount,
-    getCartAmount,
-    loadingProducts,
-  };
+  }, [user, fetchUserData]);
 
   return (
-    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+    <AppContext.Provider
+      value={{
+        user,
+        getToken,
+        router,
+        currency,
+        isSeller,
+        setIsSeller,
+        userData,
+        products,
+        paintProducts,
+        loadingProducts,
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateCartQuantity,
+        getCartCount,
+        getCartAmount,
+        setCartItems,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
   );
 };
