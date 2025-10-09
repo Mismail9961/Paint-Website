@@ -24,9 +24,9 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Update cart atomically to prevent VersionError
+    // ✅ Use correct field (userId) instead of clerkId
     const updatedUser = await User.findOneAndUpdate(
-      { clerkId: userId },
+      { userId }, // ensure your schema has `userId` for Clerk users
       {
         $set: {
           cartItems: cartData.map((item) => ({
@@ -38,13 +38,6 @@ export async function POST(request) {
       },
       { new: true, upsert: true }
     );
-
-    if (!updatedUser) {
-      return NextResponse.json(
-        { success: false, message: "User not found" },
-        { status: 404 }
-      );
-    }
 
     return NextResponse.json({
       success: true,

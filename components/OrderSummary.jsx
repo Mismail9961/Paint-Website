@@ -20,6 +20,8 @@ const OrderSummary = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const cartKeys = Object.keys(cartItems);
 
   const fetchUserAddresses = async () => {
     try {
@@ -48,6 +50,51 @@ const OrderSummary = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      if (!user) {
+        toast.error("Please log in first!");
+        return router.push("/sign-in");
+      }
+
+      const itemsArray = Object.entries(cartItems).map(([id, item]) => ({
+        product: id,
+        quantity: item.quantity,
+        shadeNumber: item.shadeNumber || "",
+      }));
+
+      if (itemsArray.length === 0) return toast.error("Your cart is empty.");
+
+      setLoading(true);
+
+      const dummyAddress = {
+        fullName: "John Doe",
+        phoneNumber: "03001234567",
+        pinCode: "12345",
+        area: "Gulshan Block 5",
+        city: "Karachi",
+        state: "Sindh",
+      };
+
+      const res = await axios.post("/api/order/create", {
+        address: dummyAddress,
+        items: itemsArray,
+      });
+
+      if (res.data.success) {
+        toast.success("✅ Order placed successfully!");
+        router.push("/orders");
+      } else {
+        toast.error(res.data.message || "Failed to place order");
+      }
+    } catch (error) {
+      console.error("Order creation error:", error);
+      toast.error("Something went wrong while placing the order.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,23 +219,6 @@ const OrderSummary = () => {
           </div>
         </div>
 
-        {/* Promo Code */}
-        <div>
-          <label className="text-base font-medium uppercase text-[#4364EE] block mb-2">
-            Promo Code
-          </label>
-          <div className="flex flex-col items-start gap-3">
-            <input
-              type="text"
-              placeholder="Enter promo code"
-              className="flex-grow w-full outline-none p-2.5 text-[#4364EE] border border-[#4364EE]/40 rounded-md"
-            />
-            <button className="bg-[#4364EE] text-white px-9 py-2 rounded-md shadow-md hover:bg-[#3650c9] transition">
-              Apply
-            </button>
-          </div>
-        </div>
-
         <hr className="border-[#4364EE]/30 my-5" />
 
         {/* Summary */}
@@ -222,11 +252,16 @@ const OrderSummary = () => {
       </div>
 
       <button
-        onClick={createOrder}
-        className="w-full bg-[#4364EE] text-white py-3 mt-5 rounded-md shadow-md hover:bg-[#3650c9] transition"
-      >
-        Place Order
-      </button>
+            onClick={handlePlaceOrder}
+            disabled={loading}
+            className={`mt-6 w-full py-3 rounded-xl font-semibold ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#4364EE] hover:bg-[#3655c8] text-white"
+            }`}
+          >
+            {loading ? "Placing Order..." : "Place Order"}
+          </button>
     </div>
   );
 };

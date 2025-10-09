@@ -169,17 +169,6 @@ const Cart = () => {
         {/* Right Side */}
         <div className="md:w-1/3 lg:w-1/4">
           <OrderSummary accentColor="#4364EE" />
-          <button
-            onClick={handlePlaceOrder}
-            disabled={loading}
-            className={`mt-6 w-full py-3 rounded-xl font-semibold ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#4364EE] hover:bg-[#3655c8] text-white"
-            }`}
-          >
-            {loading ? "Placing Order..." : "Place Order"}
-          </button>
         </div>
       </div>
     </>
