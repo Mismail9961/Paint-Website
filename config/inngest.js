@@ -1,12 +1,15 @@
 import User from "@/models/User";
-import Order from "@/models/Order";
+import Order from "@/models/ProductOrder";
+import PaintOrder from "@/models/PaintOrder";
 import { Inngest } from "inngest";
 import connectDB from "./db";
-import PaintOrder from "@/models/PaintOrder";
 
-
-// Create a client to send and receive events
+// Create Inngest client
 export const inngest = new Inngest({ id: "quickcart-next" });
+
+/* ===========================
+   🔹 SYNC USER EVENTS
+=========================== */
 
 export const syncUserCreation = inngest.createFunction(
   { id: "sync-user-from-clerk" },
@@ -14,7 +17,6 @@ export const syncUserCreation = inngest.createFunction(
   async ({ event }) => {
     try {
       console.log("📩 User Created Event:", event.data);
-
       const { id, first_name, last_name, email_addresses, image_url } =
         event.data;
 
@@ -23,11 +25,10 @@ export const syncUserCreation = inngest.createFunction(
         email: email_addresses?.[0]?.email_address ?? null,
         name:
           [first_name, last_name].filter(Boolean).join(" ") || "Unnamed User",
-        imageUrl: image_url, // <-- match schema
+        imageUrl: image_url,
       };
 
       await connectDB();
-
       const result = await User.findOneAndUpdate(
         { _id: id },
         { $set: userData },
@@ -49,7 +50,6 @@ export const syncUserUpdation = inngest.createFunction(
   async ({ event }) => {
     try {
       console.log("📩 User Updated Event:", event.data);
-
       const { id, first_name, last_name, email_addresses, image_url } =
         event.data;
 
@@ -57,11 +57,10 @@ export const syncUserUpdation = inngest.createFunction(
         email: email_addresses?.[0]?.email_address ?? null,
         name:
           [first_name, last_name].filter(Boolean).join(" ") || "Unnamed User",
-  imageUrl: image_url, // <-- match schema
+        imageUrl: image_url,
       };
 
       await connectDB();
-
       const result = await User.findByIdAndUpdate(
         id,
         { $set: userData },
@@ -83,11 +82,9 @@ export const syncUserDeletion = inngest.createFunction(
   async ({ event }) => {
     try {
       console.log("📩 User Deleted Event:", event.data);
-
       const { id } = event.data;
 
       await connectDB();
-
       const result = await User.findByIdAndDelete(id);
 
       if (result) {
@@ -104,51 +101,49 @@ export const syncUserDeletion = inngest.createFunction(
   }
 );
 
-// Inngest Function to create user's order in database
+/* ===========================
+   🧾 CREATE PRODUCT ORDER
+=========================== */
+
+
 export const createUserOrder = inngest.createFunction(
-    {
-      id: "create-user-order",
-      batchEvents: {
-        maxSize: 5,
-        timeout: "5s"
-      }
-    },
-    { event: "order/created" },
-    async ({ events }) => {
-      try {
-        await connectDB();
-        
-        console.log("🔍 INNGEST: Processing", events.length, "order events");
-        
-        const orders = events.map((event) => {
-          return {
-            userId: event.data.userId,
-            items: event.data.items,
-            amount: event.data.amount,
-            address: event.data.address,
-            date: new Date(event.data.date),
-            status: event.data.status || "Order Placed"
-          };
-        });
-        
-        // Insert all orders at once
-        const insertedOrders = await Order.insertMany(orders);
-        
-        console.log("✅ INNGEST: Successfully created", insertedOrders.length, "orders");
-        console.log("📦 INNGEST: Order IDs:", insertedOrders.map(order => order._id));
-        
-        return { 
-          success: true, 
-          processed: orders.length,
-          orderIds: insertedOrders.map(order => order._id)
-        };
-        
-      } catch (error) {
-        console.error("❌ INNGEST: Error creating orders:", error);
-        throw new Error(`Failed to create orders: ${error.message}`);
-      }
+  {
+    id: "create-user-order",
+    batchEvents: { maxSize: 5, timeout: "5s" },
+  },
+  { event: "order/created" },
+  async ({ events }) => {
+    try {
+      await connectDB();
+      console.log("🧾 INNGEST: Processing", events.length, "product orders");
+
+      const orders = events.map((e) => ({
+        userId: e.data.userId,
+        items: e.data.items,
+        amount: e.data.amount,
+        address: e.data.address,
+        date: new Date(e.data.date),
+        status: e.data.status || "Order Placed",
+      }));
+
+      const saved = await ProductOrder.insertMany(orders);
+      console.log("✅ INNGEST: Saved", saved.length, "product orders");
+
+      return {
+        success: true,
+        count: saved.length,
+        ids: saved.map((o) => o._id),
+      };
+    } catch (err) {
+      console.error("❌ INNGEST error:", err);
+      throw new Error("Failed to create product orders: " + err.message);
     }
+  }
 );
+
+/* ===========================
+   🎨 CREATE PAINT ORDER
+=========================== */
 
 export const createPaintOrder = inngest.createFunction(
   {

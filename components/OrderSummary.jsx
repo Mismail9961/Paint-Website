@@ -21,7 +21,6 @@ const OrderSummary = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
-  const cartKeys = Object.keys(cartItems);
 
   const fetchUserAddresses = async () => {
     try {
@@ -43,7 +42,7 @@ const OrderSummary = () => {
         if (data.addresses.length > 0) {
           setSelectedAddress(data.addresses[0]);
         } else {
-          toast.error("No addresses found");
+          toast.error("No addresses found. Please add one.");
         }
       } else {
         toast.error(data.message || "Failed to fetch addresses");
@@ -60,32 +59,43 @@ const OrderSummary = () => {
         return router.push("/sign-in");
       }
 
+      if (!selectedAddress) {
+        toast.error("Please select a delivery address");
+        return;
+      }
+
       const itemsArray = Object.entries(cartItems).map(([id, item]) => ({
         product: id,
         quantity: item.quantity,
         shadeNumber: item.shadeNumber || "",
       }));
 
-      if (itemsArray.length === 0) return toast.error("Your cart is empty.");
+      if (itemsArray.length === 0)
+        return toast.error("Your cart is empty.");
 
       setLoading(true);
 
-      const dummyAddress = {
-        fullName: "John Doe",
-        phoneNumber: "03001234567",
-        pinCode: "12345",
-        area: "Gulshan Block 5",
-        city: "Karachi",
-        state: "Sindh",
-      };
+      const token = await getToken();
+      if (!token) {
+        toast.error("You must be logged in to place an order");
+        return;
+      }
 
-      const res = await axios.post("/api/order/create", {
-        address: dummyAddress,
-        items: itemsArray,
-      });
+      // ✅ Send real selected address from MongoDB
+      const res = await axios.post(
+        "/api/order/create",
+        {
+          address: selectedAddress, // Send entire address object
+          items: itemsArray,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (res.data.success) {
         toast.success("✅ Order placed successfully!");
+        setCartItems({});
         router.push("/orders");
       } else {
         toast.error(res.data.message || "Failed to place order");
@@ -103,56 +113,8 @@ const OrderSummary = () => {
     setIsDropdownOpen(false);
   };
 
-  const createOrder = async () => {
-    try {
-      if (!selectedAddress) {
-        return toast.error("Please select an Address");
-      }
-
-      let cartItemsArray = Object.keys(cartItems).map((key) => ({
-        product: key,
-        quantity: cartItems[key],
-      }));
-
-      cartItemsArray = cartItemsArray.filter((item) => item.quantity > 0);
-
-      if (cartItemsArray.length === 0) {
-        return toast.error("Cart is empty");
-      }
-
-      const token = await getToken();
-      if (!token) {
-        return toast.error("You must be logged in to place an order");
-      }
-
-      const { data } = await axios.post(
-        "/api/order/create",
-        {
-          address: selectedAddress._id,
-          items: cartItemsArray,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (data.success) {
-        toast.success(data.message);
-        setCartItems({});
-        router.push("/order-placed");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Something went wrong");
-    }
-  };
-
   useEffect(() => {
-    if (user) {
-      fetchUserAddresses();
-    }
+    if (user) fetchUserAddresses();
   }, [user]);
 
   return (
@@ -252,16 +214,16 @@ const OrderSummary = () => {
       </div>
 
       <button
-            onClick={handlePlaceOrder}
-            disabled={loading}
-            className={`mt-6 w-full py-3 rounded-xl font-semibold ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#4364EE] hover:bg-[#3655c8] text-white"
-            }`}
-          >
-            {loading ? "Placing Order..." : "Place Order"}
-          </button>
+        onClick={handlePlaceOrder}
+        disabled={loading}
+        className={`mt-6 w-full py-3 rounded-xl font-semibold ${
+          loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-[#4364EE] hover:bg-[#3655c8] text-white"
+        }`}
+      >
+        {loading ? "Placing Order..." : "Place Order"}
+      </button>
     </div>
   );
 };
