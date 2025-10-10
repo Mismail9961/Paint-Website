@@ -9,6 +9,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import { toast } from "react-hot-toast";
 
@@ -28,11 +29,12 @@ export const AppContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [loadingProducts, setLoadingProducts] = useState(true);
 
-  //Fetch all products
+  const syncing = useRef(false);
+
+  // ✅ Fetch products
   const fetchProductData = useCallback(async () => {
     try {
       setLoadingProducts(true);
-
       const [productRes, paintRes] = await Promise.all([
         axios.get("/api/products/list"),
         axios.get("/api/paintProduct/list"),
@@ -41,14 +43,14 @@ export const AppContextProvider = ({ children }) => {
       if (productRes.data.success) setProducts(productRes.data.data);
       if (paintRes.data.success) setPaintProducts(paintRes.data.data);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("❌ Error fetching products:", error);
       toast.error("Error loading products");
     } finally {
       setLoadingProducts(false);
     }
   }, []);
 
-  //Fetch user and cart data
+  // ✅ Fetch user + cart
   const fetchUserData = useCallback(async () => {
     try {
       const token = await getToken();
@@ -56,63 +58,93 @@ export const AppContextProvider = ({ children }) => {
 
       setIsSeller(user?.publicMetadata?.role === "seller");
 
-      const { data } = await axios.get("/api/user/data", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const [{ data: userRes }, { data: cartRes }] = await Promise.all([
+        axios.get("/api/user/data", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get("/api/cart/get", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-      if (data.success) setUserData(data.user);
+      if (userRes.success) setUserData(userRes.user);
 
-      const cartRes = await axios.get("/api/cart/get", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (cartRes.data.success) {
-        const cartArray = cartRes.data.cartItems || [];
-        const cartObj = {};
-
-        cartArray.forEach((item) => {
-          cartObj[item.productId] = {
+      if (cartRes.success && Array.isArray(cartRes.cartItems)) {
+        const newCart = {};
+        cartRes.cartItems.forEach((item) => {
+          // 🔥 FIX: Convert ObjectId to string for consistency
+          const productId = item.productId.toString ? item.productId.toString() : String(item.productId);
+          newCart[productId] = {
             quantity: item.quantity,
             shadeNumber: item.shadeNumber || "",
           };
         });
-
-        setCartItems(cartObj);
+        console.log("📥 Loaded cart from server:", newCart);
+        setCartItems(newCart);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("❌ Error fetching user/cart data:", error);
     }
   }, [user, getToken]);
 
-  //Sync cart with server
+  // ✅ Sync cart to backend (FIXED - sends entire cart)
   const syncCartToServer = useCallback(
     async (updatedCart) => {
+      if (syncing.current) return;
+      syncing.current = true;
+  
       try {
         const token = await getToken();
-        if (!token || !user) return;
-
-        const cartArray = Object.entries(updatedCart).map(
-          ([productId, item]) => ({
+        if (!token || !user) {
+          syncing.current = false;
+          return;
+        }
+  
+        // 🔥 Convert entire cart to array format
+        const cartArray = Object.entries(updatedCart)
+          .filter(([productId, item]) => {
+            // Filter out invalid entries
+            return (
+              productId && 
+              productId !== "0" && 
+              item && 
+              item.quantity > 0
+            );
+          })
+          .map(([productId, item]) => ({
             productId,
             quantity: item.quantity,
             shadeNumber: item.shadeNumber || "",
-          })
-        );
-
-        await axios.post(
+          }));
+  
+        console.log("📤 Syncing cart to server:", cartArray);
+  
+        const response = await axios.post(
           "/api/cart/update",
           { cartData: cartArray },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+
+        if (response.data.success) {
+          console.log("✅ Cart synced successfully");
+        }
       } catch (error) {
-        console.error("Error syncing cart:", error);
+        console.error("❌ Error syncing cart:", error);
+        toast.error("Failed to sync cart");
+      } finally {
+        syncing.current = false;
       }
     },
     [user, getToken]
   );
 
-  //Cart functions
+  // ✅ Add to Cart
   const addToCart = async (productId, extraData = {}) => {
+    if (!productId || productId === "0") {
+      toast.error("Invalid product");
+      return;
+    }
+
     setCartItems((prev) => {
       const existing = prev[productId];
       const updated = {
@@ -122,45 +154,67 @@ export const AppContextProvider = ({ children }) => {
           shadeNumber: extraData.shadeNumber || existing?.shadeNumber || "",
         },
       };
-
-      if (user) syncCartToServer(updated);
+      
+      // ✅ Sync after state updates
+      if (user) {
+        // Use a small delay to ensure state is updated
+        setTimeout(() => syncCartToServer(updated), 100);
+      }
+      
       return updated;
     });
 
     toast.success("Added to cart!");
   };
 
+  // ✅ Remove from Cart
   const removeFromCart = async (productId) => {
     setCartItems((prev) => {
       const updated = { ...prev };
       delete updated[productId];
-      if (user) syncCartToServer(updated);
+      
+      if (user) {
+        setTimeout(() => syncCartToServer(updated), 100);
+      }
+      
       return updated;
     });
 
     toast.success("Item removed from cart!");
   };
 
+  // ✅ Update Quantity (FIXED)
   const updateCartQuantity = async (productId, quantity) => {
     setCartItems((prev) => {
       const updated = { ...prev };
-
+      
       if (quantity > 0) {
-        updated[productId] = { ...prev[productId], quantity };
+        // Update quantity while preserving shadeNumber
+        updated[productId] = { 
+          ...prev[productId], 
+          quantity 
+        };
       } else {
+        // Remove item if quantity is 0
         delete updated[productId];
       }
-
-      if (user) syncCartToServer(updated);
+      
+      if (user) {
+        setTimeout(() => syncCartToServer(updated), 100);
+      }
+      
       return updated;
     });
   };
 
-  const getCartCount = () =>
-    Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0);
+  // ✅ Totals
+  const getCartCount = useCallback(
+    () => Object.values(cartItems).reduce((sum, i) => sum + i.quantity, 0),
+    [cartItems]
+  );
 
-  const getCartAmount = () =>
-    Object.entries(cartItems).reduce((total, [id, item]) => {
+  const getCartAmount = useCallback(() => {
+    return Object.entries(cartItems).reduce((total, [id, item]) => {
       const product =
         products.find((p) => String(p._id) === id) ||
         paintProducts.find((p) => String(p._id) === id);
@@ -168,8 +222,9 @@ export const AppContextProvider = ({ children }) => {
       const price = product?.offerPrice || product?.price || 0;
       return total + price * item.quantity;
     }, 0);
+  }, [cartItems, products, paintProducts]);
 
-  // Initial load
+  // ✅ Initial data load
   useEffect(() => {
     fetchProductData();
   }, [fetchProductData]);

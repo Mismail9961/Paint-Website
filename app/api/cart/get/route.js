@@ -3,8 +3,11 @@ import connectDB from "@/config/db";
 import User from "@/models/User";
 import { getAuth } from "@clerk/nextjs/server";
 
+// ✅ Named export for GET method
 export async function GET(request) {
   try {
+    await connectDB();
+
     const { userId } = getAuth(request);
     if (!userId) {
       return NextResponse.json(
@@ -13,21 +16,36 @@ export async function GET(request) {
       );
     }
 
-    await connectDB();
+    // Find user and get their cart
+    const user = await User.findOne({ _id: userId }).select("cartItems");
 
-    const user = await User.findOne({ clerkId: userId });
-    if (!user) {
-      return NextResponse.json({ success: true, cartItems: [] });
+    console.log("📤 Raw cart from DB:", user?.cartItems);
+
+    if (!user || !user.cartItems) {
+      return NextResponse.json({
+        success: true,
+        cartItems: [],
+        message: "No cart found",
+      });
     }
+
+    // 🔥 Convert ObjectIds to strings for frontend consistency
+    const cartItems = (user.cartItems || []).map((item) => ({
+      productId: item.productId.toString(),
+      quantity: item.quantity,
+      shadeNumber: item.shadeNumber || "",
+    }));
+
+    console.log("📤 Sending cart to frontend:", cartItems);
 
     return NextResponse.json({
       success: true,
-      cartItems: user.cartItems || [],
+      cartItems,
     });
   } catch (error) {
-    console.error("Error fetching cart:", error);
+    console.error("❌ Error getting cart:", error);
     return NextResponse.json(
-      { success: false, message: "Server error" },
+      { success: false, message: error.message || "Internal Server Error" },
       { status: 500 }
     );
   }
