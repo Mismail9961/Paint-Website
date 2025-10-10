@@ -4,7 +4,7 @@ import {
   syncUserCreation,
   syncUserUpdation,
   syncUserDeletion,
-  createPaintOrder
+  createPaintOrder,
 } from "@/config/inngest";
 
 // Inngest handler route: /api/inngest

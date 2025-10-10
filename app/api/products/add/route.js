@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/config/db";
 import Product from "@/models/Product";
 
-// ✅ Cloudinary config
+// Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -13,7 +13,7 @@ cloudinary.config({
 
 export async function POST(request) {
   try {
-    // ✅ Clerk authentication
+    // Clerk authentication
     const { userId } = getAuth(request);
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,31 +28,28 @@ export async function POST(request) {
     const offerPrice = formData.get("offerPrice");
     const imageFiles = formData.getAll("images");
 
-    // ✅ Validate required fields
+    // Validate required fields
     if (!title || !description || !quantity || !price) {
       return NextResponse.json(
-        {
-          error:
-            "All fields (title, description, quantity, and price) are required",
-        },
+        { error: "All fields (title, description, quantity, and price) are required" },
         { status: 400 }
       );
     }
 
-    // ✅ Ensure exactly 1 image
+    // Validate image count
     if (!imageFiles || imageFiles.length !== 1) {
       return NextResponse.json(
-        { error: "Exactly 1 image is required" },
+        { error: "Exactly one image is required" },
         { status: 400 }
       );
     }
 
-    // ✅ Convert numeric values
+    // Convert numeric values
     const numericQuantity = Number(quantity);
     const numericPrice = Number(price);
     const numericOfferPrice = offerPrice ? Number(offerPrice) : null;
 
-    // ✅ Price validations
+    // Validate price
     if (isNaN(numericPrice) || numericPrice <= 0) {
       return NextResponse.json(
         { error: "Price must be a positive number" },
@@ -67,7 +64,7 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Helper: upload image to Cloudinary
+    // Helper: upload image to Cloudinary
     const uploadToCloudinary = async (file) => {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -84,12 +81,12 @@ export async function POST(request) {
       });
     };
 
-    // ✅ Upload image
+    // Upload images
     const uploadResults = await Promise.all(imageFiles.map(uploadToCloudinary));
 
     await connectDB();
 
-    // ✅ Save product in MongoDB
+    // Save product to database
     const newProduct = await Product.create({
       title,
       description,
@@ -106,7 +103,7 @@ export async function POST(request) {
       data: newProduct,
     });
   } catch (error) {
-    console.error("❌ Error creating product:", error);
+    console.error("Error creating product:", error);
     return NextResponse.json(
       {
         error: "Something went wrong while creating product",

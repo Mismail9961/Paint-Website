@@ -6,7 +6,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    // Fetch all paint products
+    // Fetch all paint products sorted by creation date (newest first)
     const paints = await PaintProduct.find().sort({ createdAt: -1 });
 
     return NextResponse.json({
@@ -15,9 +15,13 @@ export async function GET() {
       data: paints,
     });
   } catch (error) {
-    console.error("❌ Error fetching paints:", error);
+    console.error("Error fetching paints:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch paints", details: error.message },
+      {
+        success: false,
+        error: "Failed to fetch paints.",
+        details: error.message,
+      },
       { status: 500 }
     );
   }

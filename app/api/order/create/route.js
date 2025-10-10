@@ -9,18 +9,21 @@ import { getAuth } from "@clerk/nextjs/server";
 export async function POST(request) {
   try {
     const { userId } = getAuth(request);
-    if (!userId)
+    if (!userId) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 401 }
       );
+    }
 
     const { address, items } = await request.json();
-    if (!address || !Array.isArray(items) || items.length === 0)
+
+    if (!address || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { success: false, message: "Missing order data" },
         { status: 400 }
       );
+    }
 
     await connectDB();
 
@@ -33,6 +36,7 @@ export async function POST(request) {
     const allProducts = [...normalProducts, ...paintProducts];
 
     let totalAmount = 0;
+
     const orderItems = items
       .map((item) => {
         const product = allProducts.find(
@@ -53,13 +57,13 @@ export async function POST(request) {
       })
       .filter(Boolean);
 
-    if (orderItems.length === 0)
+    if (orderItems.length === 0) {
       return NextResponse.json(
         { success: false, message: "No valid items found" },
         { status: 400 }
       );
+    }
 
-    // ✅ Create order
     const newOrder = await PaintOrder.create({
       userId,
       address,
@@ -69,10 +73,9 @@ export async function POST(request) {
       date: new Date(),
     });
 
-    // ✅ Clear user's cart automatically
     await User.updateOne({ userId }, { $set: { cartItems: [] } });
 
-    console.log("✅ Order saved:", newOrder._id);
+    console.log("Order saved:", newOrder._id);
 
     return NextResponse.json({
       success: true,
@@ -80,7 +83,7 @@ export async function POST(request) {
       order: newOrder,
     });
   } catch (error) {
-    console.error("❌ Error placing order:", error);
+    console.error("Error placing order:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Internal Server Error" },
       { status: 500 }

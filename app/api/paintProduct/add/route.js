@@ -12,7 +12,7 @@ cloudinary.config({
 
 export async function POST(request) {
   try {
-    // ✅ Clerk authentication
+    // Clerk authentication
     const { userId } = getAuth(request);
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -30,52 +30,53 @@ export async function POST(request) {
     const paintFiles = formData.getAll("images");
     const shadeFiles = formData.getAll("shadeCardImages");
 
-    // ✅ Validate required fields
+    // Validate required fields
     if (!title || !description || !quantity || !category || !price) {
       return NextResponse.json(
         {
           error:
-            "All fields (title, description, quantity, category, and price) are required",
+            "All fields (title, description, quantity, category, and price) are required.",
         },
         { status: 400 }
       );
     }
 
-    // ✅ Validate images count
+    // Validate image counts
     if (!paintFiles || paintFiles.length !== 2) {
       return NextResponse.json(
-        { error: "Exactly 2 paint images are required" },
-        { status: 400 }
-      );
-    }
-    if (!shadeFiles || shadeFiles.length !== 2) {
-      return NextResponse.json(
-        { error: "Exactly 2 shade card images are required" },
+        { error: "Exactly 2 paint images are required." },
         { status: 400 }
       );
     }
 
-    // ✅ Convert numeric values
+    if (!shadeFiles || shadeFiles.length !== 2) {
+      return NextResponse.json(
+        { error: "Exactly 2 shade card images are required." },
+        { status: 400 }
+      );
+    }
+
+    // Convert numeric values
     const numericQuantity = Number(quantity);
     const numericPrice = Number(price);
     const numericOfferPrice = offerPrice ? Number(offerPrice) : null;
 
-    // ✅ Validate numeric values
+    // Validate numeric values
     if (isNaN(numericPrice) || numericPrice <= 0) {
       return NextResponse.json(
-        { error: "Price must be a positive number" },
+        { error: "Price must be a positive number." },
         { status: 400 }
       );
     }
 
     if (numericOfferPrice && numericOfferPrice >= numericPrice) {
       return NextResponse.json(
-        { error: "Offer price must be less than the original price" },
+        { error: "Offer price must be less than the original price." },
         { status: 400 }
       );
     }
 
-    // ✅ Upload helper
+    // Helper to upload image to Cloudinary
     const uploadToCloudinary = async (file) => {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -92,17 +93,18 @@ export async function POST(request) {
       });
     };
 
-    // ✅ Upload images
+    // Upload paint and shade images
     const paintUploadResults = await Promise.all(
       paintFiles.map(uploadToCloudinary)
     );
+
     const shadeUploadResults = await Promise.all(
       shadeFiles.map(uploadToCloudinary)
     );
 
     await connectDB();
 
-    // ✅ Save product to MongoDB
+    // Save paint product in database
     const newPaintProduct = await PaintProduct.create({
       title,
       description,
@@ -112,19 +114,19 @@ export async function POST(request) {
       category,
       images: paintUploadResults.map((r) => r.secure_url),
       shadeCardImages: shadeUploadResults.map((r) => r.secure_url),
-      createdBy: String(userId), // Clerk user ID
+      createdBy: String(userId),
     });
 
     return NextResponse.json({
       success: true,
-      message: "🎨 Paint product created successfully!",
+      message: "Paint product created successfully.",
       data: newPaintProduct,
     });
   } catch (error) {
-    console.error("❌ Error adding paint product:", error);
+    console.error("Error adding paint product:", error);
     return NextResponse.json(
       {
-        error: "Something went wrong while creating paint product",
+        error: "Something went wrong while creating the paint product.",
         details: error.message,
       },
       { status: 500 }

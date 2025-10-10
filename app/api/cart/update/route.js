@@ -17,7 +17,7 @@ export async function POST(request) {
 
     const { cartData, clearCart } = await request.json();
 
-    // ✅ Clear cart completely
+    // Clear cart completely
     if (clearCart) {
       await User.findOneAndUpdate(
         { _id: userId },
@@ -31,7 +31,7 @@ export async function POST(request) {
       });
     }
 
-    // ✅ Validate cart data
+    // Validate cart data
     if (!Array.isArray(cartData) || cartData.length === 0) {
       return NextResponse.json(
         { success: false, message: "Invalid or empty cart data" },
@@ -39,7 +39,7 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Map items and update user
+    // Map items and update user
     const formattedCart = cartData.map((item) => ({
       productId: item.productId,
       quantity: item.quantity || 1,
@@ -48,11 +48,7 @@ export async function POST(request) {
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      {
-        $set: {
-          cartItems: formattedCart,
-        },
-      },
+      { $set: { cartItems: formattedCart } },
       { new: true, upsert: true }
     );
 
@@ -62,7 +58,7 @@ export async function POST(request) {
       cartItems: updatedUser.cartItems,
     });
   } catch (error) {
-    console.error("❌ Error updating cart:", error);
+    console.error("Error updating cart:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Internal Server Error" },
       { status: 500 }

@@ -17,9 +17,8 @@ export async function POST(request) {
     }
 
     const { address, items } = await request.json();
-    console.log("📦 Order Request Received:", { address, items });
+    console.log("Order Request Received:", { address, items });
 
-    // Validate input
     if (!address || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { success: false, message: "Missing order data" },
@@ -29,7 +28,6 @@ export async function POST(request) {
 
     await connectDB();
 
-    // 🧩 Fetch both normal and paint products
     const productIds = items.map((i) => i.product);
     const [normalProducts, paintProducts] = await Promise.all([
       Product.find({ _id: { $in: productIds } }),
@@ -45,14 +43,13 @@ export async function POST(request) {
       );
     }
 
-    // 💰 Calculate total and prepare order items
     let totalAmount = 0;
+
     const orderItems = items
       .map((item) => {
         const product = allProducts.find(
           (p) => String(p._id) === String(item.product)
         );
-        
         if (!product) return null;
 
         const price = product.offerPrice || product.price || 0;
@@ -75,7 +72,6 @@ export async function POST(request) {
       );
     }
 
-    // 🏦 Create order in PaintOrder collection
     const newOrder = await PaintOrder.create({
       userId,
       address,
@@ -85,20 +81,19 @@ export async function POST(request) {
       date: new Date(),
     });
 
-    console.log("✅ Order Created Successfully:", newOrder._id);
+    console.log("Order Created Successfully:", newOrder._id);
 
-    // 🧹 Clear user's cart after successful order placement
     await User.findOneAndUpdate(
       { clerkId: userId },
       { $set: { cartItems: [] } },
       { new: true }
     );
 
-    console.log("🛒 Cart cleared for user:", userId);
+    console.log("Cart cleared for user:", userId);
 
     return NextResponse.json({
       success: true,
-      message: "Order placed successfully and cart cleared ✅",
+      message: "Order placed successfully and cart cleared",
       order: {
         id: newOrder._id,
         amount: newOrder.amount,
@@ -107,7 +102,7 @@ export async function POST(request) {
       },
     });
   } catch (error) {
-    console.error("❌ Error creating order:", error);
+    console.error("Error creating order:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Internal Server Error" },
       { status: 500 }

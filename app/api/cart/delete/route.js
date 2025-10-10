@@ -24,14 +24,12 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Remove item from cartItems using $pull
+    // Remove item from user's cart
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      {
-        $pull: { cartItems: { productId } },
-      },
+      { $pull: { cartItems: { productId } } },
       { new: true }
-    ).populate("cartItems.productId"); // optional, if you need product details
+    ).populate("cartItems.productId");
 
     return NextResponse.json({
       success: true,
@@ -39,7 +37,7 @@ export async function POST(request) {
       cartItems: updatedUser?.cartItems || [],
     });
   } catch (error) {
-    console.error("❌ Error deleting cart item:", error);
+    console.error("Error deleting cart item:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Internal Server Error" },
       { status: 500 }
