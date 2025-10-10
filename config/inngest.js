@@ -1,5 +1,4 @@
 import User from "@/models/User";
-import Order from "@/models/ProductOrder";
 import PaintOrder from "@/models/PaintOrder";
 import { Inngest } from "inngest";
 import connectDB from "./db";
@@ -100,6 +99,12 @@ export const syncUserDeletion = inngest.createFunction(
     }
   }
 );
+
+/* ===========================
+   🧾 CREATE PRODUCT ORDER
+=========================== */
+
+
 /* ===========================
    🎨 CREATE PAINT ORDER
 =========================== */
