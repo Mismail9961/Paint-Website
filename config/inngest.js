@@ -3,12 +3,8 @@ import PaintOrder from "@/models/PaintOrder";
 import { Inngest } from "inngest";
 import connectDB from "./db";
 
-// Create Inngest client
+// Initialize Inngest client
 export const inngest = new Inngest({ id: "quickcart-next" });
-
-/* ===========================
-   🔹 SYNC USER EVENTS
-=========================== */
 
 export const syncUserCreation = inngest.createFunction(
   { id: "sync-user-from-clerk" },
@@ -16,18 +12,18 @@ export const syncUserCreation = inngest.createFunction(
   async ({ event }) => {
     try {
       console.log("📩 User Created Event:", event.data);
-      const { id, first_name, last_name, email_addresses, image_url } =
-        event.data;
+
+      const { id, first_name, last_name, email_addresses, image_url } = event.data;
 
       const userData = {
         _id: id,
         email: email_addresses?.[0]?.email_address ?? null,
-        name:
-          [first_name, last_name].filter(Boolean).join(" ") || "Unnamed User",
+        name: [first_name, last_name].filter(Boolean).join(" ") || "Unnamed User",
         imageUrl: image_url,
       };
 
       await connectDB();
+
       const result = await User.findOneAndUpdate(
         { _id: id },
         { $set: userData },
@@ -49,22 +45,18 @@ export const syncUserUpdation = inngest.createFunction(
   async ({ event }) => {
     try {
       console.log("📩 User Updated Event:", event.data);
-      const { id, first_name, last_name, email_addresses, image_url } =
-        event.data;
+
+      const { id, first_name, last_name, email_addresses, image_url } = event.data;
 
       const userData = {
         email: email_addresses?.[0]?.email_address ?? null,
-        name:
-          [first_name, last_name].filter(Boolean).join(" ") || "Unnamed User",
+        name: [first_name, last_name].filter(Boolean).join(" ") || "Unnamed User",
         imageUrl: image_url,
       };
 
       await connectDB();
-      const result = await User.findByIdAndUpdate(
-        id,
-        { $set: userData },
-        { new: true }
-      );
+
+      const result = await User.findByIdAndUpdate(id, { $set: userData }, { new: true });
 
       console.log("✅ User synced (updated):", result?._id);
       return { success: true, userId: result?._id };
@@ -84,6 +76,7 @@ export const syncUserDeletion = inngest.createFunction(
       const { id } = event.data;
 
       await connectDB();
+
       const result = await User.findByIdAndDelete(id);
 
       if (result) {
@@ -99,9 +92,6 @@ export const syncUserDeletion = inngest.createFunction(
     }
   }
 );
-/* ===========================
-   🎨 CREATE PAINT ORDER
-=========================== */
 
 export const createPaintOrder = inngest.createFunction(
   {
@@ -112,10 +102,12 @@ export const createPaintOrder = inngest.createFunction(
   async ({ events }) => {
     try {
       await connectDB();
+
       console.log("🎨 INNGEST: Processing", events.length, "paint order events");
 
       const paintOrders = events.map((event) => {
         const { userId, items, amount, address, date, status } = event.data;
+
         return {
           userId,
           address,
@@ -133,6 +125,7 @@ export const createPaintOrder = inngest.createFunction(
       });
 
       const inserted = await PaintOrder.insertMany(paintOrders);
+
       console.log("✅ INNGEST: Created", inserted.length, "paint orders");
 
       return {

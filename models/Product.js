@@ -14,11 +14,14 @@ const productSchema = new mongoose.Schema(
     quantity: {
       type: Number,
       required: true,
-      min: 0, // avoid negative stock
+      min: 0,
     },
     images: {
-      type: [String], // store image URLs (e.g. Cloudinary links)
-      validate: [arr => arr.length === 1, "Exactly 1 image is required"],
+      type: [String],
+      validate: [
+        (arr) => arr.length === 1,
+        "Exactly 1 image is required",
+      ],
       required: true,
     },
     price: {
@@ -38,7 +41,7 @@ const productSchema = new mongoose.Schema(
       },
     },
     createdBy: {
-      type: String, // Clerk user ID
+      type: String,
       required: true,
     },
   },

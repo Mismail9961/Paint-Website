@@ -12,7 +12,7 @@ class DatabaseConnection {
 
     mongoose.connection.on("connected", () => {
       console.log(
-        `✅ MongoDB connected: ${mongoose.connection.host}/${mongoose.connection.name}`
+        `MongoDB connected: ${mongoose.connection.host}/${mongoose.connection.name}`
       );
       this.isConnected = true;
     });

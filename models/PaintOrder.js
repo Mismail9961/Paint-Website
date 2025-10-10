@@ -64,10 +64,10 @@ const PaintOrderSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export default mongoose.models.PaintOrder ||
-  mongoose.model("PaintOrder", PaintOrderSchema);
+const PaintOrder =
+  mongoose.models.PaintOrder || mongoose.model("PaintOrder", PaintOrderSchema);
+
+export default PaintOrder;

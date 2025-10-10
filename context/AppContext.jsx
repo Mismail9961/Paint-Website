@@ -16,10 +16,10 @@ export const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
 
 export const AppContextProvider = ({ children }) => {
-  const currency = process.env.NEXT_PUBLIC_CURRENCY || "PKR";
   const router = useRouter();
   const { user } = useUser();
   const { getToken } = useAuth();
+  const currency = process.env.NEXT_PUBLIC_CURRENCY || "PKR";
 
   const [products, setProducts] = useState([]);
   const [paintProducts, setPaintProducts] = useState([]);
@@ -28,10 +28,11 @@ export const AppContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [loadingProducts, setLoadingProducts] = useState(true);
 
-  // ✅ Fetch all products
+  //Fetch all products
   const fetchProductData = useCallback(async () => {
     try {
       setLoadingProducts(true);
+
       const [productRes, paintRes] = await Promise.all([
         axios.get("/api/products/list"),
         axios.get("/api/paintProduct/list"),
@@ -47,14 +48,13 @@ export const AppContextProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ Fetch user + cart data
+  //Fetch user and cart data
   const fetchUserData = useCallback(async () => {
     try {
       const token = await getToken();
       if (!token || !user) return;
 
-      if (user?.publicMetadata?.role === "seller") setIsSeller(true);
-      else setIsSeller(false);
+      setIsSeller(user?.publicMetadata?.role === "seller");
 
       const { data } = await axios.get("/api/user/data", {
         headers: { Authorization: `Bearer ${token}` },
@@ -62,7 +62,6 @@ export const AppContextProvider = ({ children }) => {
 
       if (data.success) setUserData(data.user);
 
-      // Fetch saved cart
       const cartRes = await axios.get("/api/cart/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -70,12 +69,14 @@ export const AppContextProvider = ({ children }) => {
       if (cartRes.data.success) {
         const cartArray = cartRes.data.cartItems || [];
         const cartObj = {};
+
         cartArray.forEach((item) => {
           cartObj[item.productId] = {
             quantity: item.quantity,
             shadeNumber: item.shadeNumber || "",
           };
         });
+
         setCartItems(cartObj);
       }
     } catch (error) {
@@ -83,7 +84,7 @@ export const AppContextProvider = ({ children }) => {
     }
   }, [user, getToken]);
 
-  // ✅ Sync cart to DB
+  //Sync cart with server
   const syncCartToServer = useCallback(
     async (updatedCart) => {
       try {
@@ -110,7 +111,7 @@ export const AppContextProvider = ({ children }) => {
     [user, getToken]
   );
 
-  // ✅ Cart functions
+  //Cart functions
   const addToCart = async (productId, extraData = {}) => {
     setCartItems((prev) => {
       const existing = prev[productId];
@@ -121,9 +122,11 @@ export const AppContextProvider = ({ children }) => {
           shadeNumber: extraData.shadeNumber || existing?.shadeNumber || "",
         },
       };
+
       if (user) syncCartToServer(updated);
       return updated;
     });
+
     toast.success("Added to cart!");
   };
 
@@ -134,32 +137,39 @@ export const AppContextProvider = ({ children }) => {
       if (user) syncCartToServer(updated);
       return updated;
     });
+
     toast.success("Item removed from cart!");
   };
 
   const updateCartQuantity = async (productId, quantity) => {
     setCartItems((prev) => {
       const updated = { ...prev };
-      if (quantity > 0) updated[productId] = { ...prev[productId], quantity };
-      else delete updated[productId];
+
+      if (quantity > 0) {
+        updated[productId] = { ...prev[productId], quantity };
+      } else {
+        delete updated[productId];
+      }
+
       if (user) syncCartToServer(updated);
       return updated;
     });
   };
 
   const getCartCount = () =>
-    Object.values(cartItems).reduce((sum, i) => sum + i.quantity, 0);
+    Object.values(cartItems).reduce((sum, item) => sum + item.quantity, 0);
 
   const getCartAmount = () =>
     Object.entries(cartItems).reduce((total, [id, item]) => {
       const product =
         products.find((p) => String(p._id) === id) ||
         paintProducts.find((p) => String(p._id) === id);
+
       const price = product?.offerPrice || product?.price || 0;
       return total + price * item.quantity;
     }, 0);
 
-  // ✅ Initial Load
+  // Initial load
   useEffect(() => {
     fetchProductData();
   }, [fetchProductData]);

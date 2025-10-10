@@ -41,7 +41,6 @@ const paintProductSchema = new mongoose.Schema(
       min: [0, "Offer price cannot be negative"],
       validate: {
         validator: function (value) {
-          // Only validate if offerPrice is provided
           return value == null || value < this.price;
         },
         message: "Offer price must be less than the original price",
@@ -49,7 +48,7 @@ const paintProductSchema = new mongoose.Schema(
     },
 
     createdBy: {
-      type: String, // Clerk userId
+      type: String,
       ref: "User",
       required: true,
     },
