@@ -99,12 +99,6 @@ export const syncUserDeletion = inngest.createFunction(
     }
   }
 );
-
-/* ===========================
-   🧾 CREATE PRODUCT ORDER
-=========================== */
-
-
 /* ===========================
    🎨 CREATE PAINT ORDER
 =========================== */

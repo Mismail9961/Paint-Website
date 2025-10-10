@@ -17,40 +17,43 @@ export async function POST(request) {
 
     const { cartData, clearCart } = await request.json();
 
-    // ✅ If clearCart = true → empty the cart
+    // ✅ Clear cart completely
     if (clearCart) {
-      await User.findByIdAndUpdate(
-        userId,
+      await User.findOneAndUpdate(
+        { _id: userId },
         { $set: { cartItems: [] } },
         { new: true, upsert: true }
       );
+
       return NextResponse.json({
         success: true,
         message: "Cart cleared successfully",
       });
     }
 
-    // ✅ Validate cartData
-    if (!Array.isArray(cartData)) {
+    // ✅ Validate cart data
+    if (!Array.isArray(cartData) || cartData.length === 0) {
       return NextResponse.json(
-        { success: false, message: "Invalid cart data format" },
+        { success: false, message: "Invalid or empty cart data" },
         { status: 400 }
       );
     }
 
-    // ✅ Update or create user cart
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
+    // ✅ Map items and update user
+    const formattedCart = cartData.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity || 1,
+      shadeNumber: item.shadeNumber || "",
+    }));
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
       {
         $set: {
-          cartItems: cartData.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity || 1,
-            shadeNumber: item.shadeNumber || "",
-          })),
+          cartItems: formattedCart,
         },
       },
-      { new: true, upsert: true } // ensures user doc is created if not exists
+      { new: true, upsert: true }
     );
 
     return NextResponse.json({
