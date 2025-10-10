@@ -4,7 +4,6 @@ import {
   syncUserCreation,
   syncUserUpdation,
   syncUserDeletion,
-  // createUserOrder,
   createPaintOrder
 } from "@/config/inngest";
 
@@ -15,7 +14,6 @@ export const { GET, POST, PUT } = serve({
     syncUserCreation,
     syncUserUpdation,
     syncUserDeletion,
-    // createUserOrder,
     createPaintOrder,
   ],
 });

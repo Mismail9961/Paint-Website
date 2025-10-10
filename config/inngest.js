@@ -100,47 +100,6 @@ export const syncUserDeletion = inngest.createFunction(
     }
   }
 );
-
-/* ===========================
-   🧾 CREATE PRODUCT ORDER
-=========================== */
-
-
-// export const createUserOrder = inngest.createFunction(
-//   {
-//     id: "create-user-order",
-//     batchEvents: { maxSize: 5, timeout: "5s" },
-//   },
-//   { event: "order/created" },
-//   async ({ events }) => {
-//     try {
-//       await connectDB();
-//       console.log("🧾 INNGEST: Processing", events.length, "product orders");
-
-//       const orders = events.map((e) => ({
-//         userId: e.data.userId,
-//         items: e.data.items,
-//         amount: e.data.amount,
-//         address: e.data.address,
-//         date: new Date(e.data.date),
-//         status: e.data.status || "Order Placed",
-//       }));
-
-//       const saved = await ProductOrder.insertMany(orders);
-//       console.log("✅ INNGEST: Saved", saved.length, "product orders");
-
-//       return {
-//         success: true,
-//         count: saved.length,
-//         ids: saved.map((o) => o._id),
-//       };
-//     } catch (err) {
-//       console.error("❌ INNGEST error:", err);
-//       throw new Error("Failed to create product orders: " + err.message);
-//     }
-//   }
-// );
-
 /* ===========================
    🎨 CREATE PAINT ORDER
 =========================== */
