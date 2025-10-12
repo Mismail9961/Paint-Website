@@ -1,9 +1,7 @@
 # Paint Website - A simple eCommerce website
 
-Paint Website is an open-source **Next.js eCommerce Website** project.  
+Paint Website is an open-source project.  
 It provides a modern, fast and customizable shopping UI.  
-This repo is **Full Stack Website** – contributors can improve the design, add new pages, animations and more.
-
 ---
 
 ## Features
