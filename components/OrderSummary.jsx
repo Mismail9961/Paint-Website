@@ -72,6 +72,7 @@ const OrderSummary = () => {
       setLoading(true);
       const token = await getToken();
 
+      // ✅ 1. Place order
       const res = await axios.post(
         "/api/order/create",
         { address: selectedAddress, items: itemsArray },
@@ -79,9 +80,22 @@ const OrderSummary = () => {
       );
 
       if (res.data.success) {
-        toast.success("✅ Order placed successfully!");
-        setCartItems({}); // frontend
-        router.push("/orders");
+        toast.success("Order placed successfully!");
+
+        // ✅ 2. Clear backend cart
+        try {
+          await axios.post("/api/cart/update", { clearCart: true }, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } catch (err) {
+          console.warn("Cart clearing on backend failed:", err.message);
+        }
+
+        // ✅ 3. Clear frontend cart
+        setCartItems({});
+
+        // ✅ 4. Navigate to orders page
+        router.push("/my-orders");
       } else {
         toast.error(res.data.message || "Failed to place order");
       }

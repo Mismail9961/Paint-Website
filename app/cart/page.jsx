@@ -30,7 +30,7 @@ const Cart = () => {
     try {
       await axios.post("/api/cart/update", { clearCart: true });
       setCartItems({});
-      toast.success("Cart cleared successfully 🎉");
+      toast.success("Cart cleared successfully!");
     } catch (error) {
       console.error("Error clearing cart:", error);
       toast.error("Failed to clear cart");
@@ -43,8 +43,8 @@ const Cart = () => {
       const res = await axios.post("/api/cart/delete", { productId });
 
       if (res.data.success) {
-        removeFromCart(productId); // update context
-        toast.success("Item removed from cart 🗑️");
+        removeFromCart(productId);
+        toast.success("Item removed from cart");
       } else {
         toast.error(res.data.message || "Failed to remove item");
       }
@@ -103,16 +103,19 @@ const Cart = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -15 }}
                         transition={{ duration: 0.25 }}
-                        className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border bg-white shadow-sm p-4"
+                        className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border bg-white shadow-md p-4"
                       >
-                        <Image
-                          src={product.images?.[0] || assets.placeholder_image}
-                          alt={product.title}
-                          width={96}
-                          height={96}
-                          className="w-24 h-24 object-cover rounded-md"
-                        />
+                        {/* Product Image */}
+                        <div className="relative w-28 h-28 group">
+                          <Image
+                            src={product.images?.[0] || assets.placeholder_image}
+                            alt={product.title}
+                            fill
+                            className="object-cover rounded-md transition-transform duration-300 group-hover:scale-125"
+                          />
+                        </div>
 
+                        {/* Product Details */}
                         <div className="flex-1 text-center sm:text-left">
                           <p className="font-semibold text-gray-800 text-lg">
                             {product.title}
@@ -132,6 +135,7 @@ const Cart = () => {
                           </button>
                         </div>
 
+                        {/* Quantity Controls */}
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() =>
@@ -158,6 +162,7 @@ const Cart = () => {
                           </button>
                         </div>
 
+                        {/* Total */}
                         <div className="font-medium text-gray-800">
                           Rs. {(price * cartItem.quantity).toFixed(2)}
                         </div>

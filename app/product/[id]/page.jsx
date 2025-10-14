@@ -68,13 +68,13 @@ const Product = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           {/* LEFT IMAGES */}
           <div className="px-5 lg:px-16 xl:px-20">
-            <div className="rounded-lg overflow-hidden bg-gray-100 mb-4">
+            <div className="rounded-lg overflow-hidden bg-gray-100 mb-4 flex justify-center items-center">
               <Image
                 src={main}
                 alt={productData.title || productData.name}
                 width={1280}
                 height={720}
-                className="w-full h-auto object-cover"
+                className="w-full h-auto max-h-[600px] object-contain"
               />
             </div>
 
@@ -83,14 +83,16 @@ const Product = () => {
                 <div
                   key={i}
                   onClick={() => setMainImage(img)}
-                  className="cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:opacity-80"
+                  className={`cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-orange-500 transition-all duration-200 ${
+                    mainImage === img ? "ring-2 ring-orange-600" : ""
+                  }`}
                 >
                   <Image
                     src={img}
                     alt={`img-${i}`}
                     width={300}
                     height={300}
-                    className="w-full h-auto object-cover"
+                    className="w-full h-[100px] md:h-[120px] lg:h-[140px] object-contain"
                   />
                 </div>
               ))}
@@ -145,7 +147,7 @@ const Product = () => {
           </div>
         </div>
 
-        {/* FEATURED */}
+        {/* FEATURED PRODUCTS */}
         <div className="flex flex-col items-center">
           <div className="flex flex-col items-center mb-4 mt-16">
             <p className="text-3xl font-medium">
@@ -166,46 +168,54 @@ const Product = () => {
 
       {/* SHADE MODAL */}
       {showShadeModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full space-y-4">
-            <h2 className="text-xl font-semibold text-gray-800 text-center">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white p-10 rounded-2xl shadow-2xl w-[80%] h-[95%] overflow-y-auto flex flex-col items-center">
+            <h2 className="text-3xl font-semibold text-gray-800 text-center">
               Select Your Shade
             </h2>
-            <p className="text-gray-500 text-center text-sm">
-              Enter your desired shade number from the shade cards below.
+            <p className="text-gray-500 text-center text-lg mt-2">
+              Hover to zoom and inspect shade details closely.
             </p>
 
-            <div className="grid grid-cols-2 gap-3 mt-4">
+            {/* SHADE IMAGES */}
+            <div className="flex flex-wrap justify-center items-center gap-8 mt-10">
               {productData.shadeCardImages?.map((img, i) => (
-                <Image
+                <div
                   key={i}
-                  src={img}
-                  alt={`Shade ${i + 1}`}
-                  width={300}
-                  height={300}
-                  className="rounded-lg border object-cover"
-                />
+                  className="relative bg-gray-100 border border-gray-300 rounded-xl overflow-hidden group flex justify-center items-center"
+                  style={{ width: "1200px", height: "500px" }}
+                >
+                  <Image
+                    src={img}
+                    alt={`Shade ${i + 1}`}
+                    width={1200}
+                    height={800}
+                    className="object-contain w-full h-full transform transition-transform duration-500 group-hover:scale-150"
+                  />
+                </div>
               ))}
             </div>
 
+            {/* SHADE INPUT */}
             <input
               type="text"
               placeholder="Enter Shade Number"
               value={shadeNumber}
               onChange={(e) => setShadeNumber(e.target.value)}
-              className="w-full border px-3 py-2 rounded mt-4 outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-1/2 border px-4 py-3 rounded-lg mt-10 outline-none focus:ring-2 focus:ring-orange-500 text-center text-lg"
             />
 
-            <div className="flex gap-4 mt-6">
+            {/* BUTTONS */}
+            <div className="flex justify-center gap-6 mt-8 mb-6">
               <button
                 onClick={() => setShowShadeModal(false)}
-                className="w-1/2 py-2 border rounded hover:bg-gray-100"
+                className="px-10 py-3 border rounded-lg hover:bg-gray-100 text-lg"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmShade}
-                className="w-1/2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                className="px-10 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-lg"
               >
                 Confirm
               </button>

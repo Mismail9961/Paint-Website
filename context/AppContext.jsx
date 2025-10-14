@@ -31,7 +31,7 @@ export const AppContextProvider = ({ children }) => {
 
   const syncing = useRef(false);
 
-  // ✅ Fetch products
+  // ✅ Fetch all products
   const fetchProductData = useCallback(async () => {
     try {
       setLoadingProducts(true);
@@ -50,7 +50,7 @@ export const AppContextProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ Fetch user + cart
+  // ✅ Fetch user + saved cart
   const fetchUserData = useCallback(async () => {
     try {
       const token = await getToken();
@@ -72,65 +72,55 @@ export const AppContextProvider = ({ children }) => {
       if (cartRes.success && Array.isArray(cartRes.cartItems)) {
         const newCart = {};
         cartRes.cartItems.forEach((item) => {
-          // 🔥 FIX: Convert ObjectId to string for consistency
-          const productId = item.productId.toString ? item.productId.toString() : String(item.productId);
-          newCart[productId] = {
-            quantity: item.quantity,
-            shadeNumber: item.shadeNumber || "",
-          };
+          try {
+            const id =
+              typeof item.productId === "object"
+                ? item.productId.toString()
+                : String(item.productId);
+            newCart[id] = {
+              quantity: item.quantity || 1,
+              shadeNumber: item.shadeNumber || "",
+            };
+          } catch (e) {
+            console.warn("⚠️ Skipped invalid cart item", item);
+          }
         });
-        console.log("📥 Loaded cart from server:", newCart);
+        console.log("Loaded cart from server:", newCart);
         setCartItems(newCart);
       }
     } catch (error) {
-      console.error("❌ Error fetching user/cart data:", error);
+      console.error("❌ Error fetching user/cart:", error);
     }
   }, [user, getToken]);
 
-  // ✅ Sync cart to backend (FIXED - sends entire cart)
+  // ✅ Sync full cart with backend
   const syncCartToServer = useCallback(
-    async (updatedCart) => {
-      if (syncing.current) return;
-      syncing.current = true;
-  
+    async (cart) => {
+      if (!user || syncing.current) return;
+
+      const token = await getToken();
+      if (!token) return;
+
+      const cartArray = Object.entries(cart)
+        .filter(([id, item]) => item && item.quantity > 0)
+        .map(([id, item]) => ({
+          productId: id,
+          quantity: item.quantity,
+          shadeNumber: item.shadeNumber || "",
+        }));
+
+      if (!cartArray.length) return;
+
       try {
-        const token = await getToken();
-        if (!token || !user) {
-          syncing.current = false;
-          return;
-        }
-  
-        // 🔥 Convert entire cart to array format
-        const cartArray = Object.entries(updatedCart)
-          .filter(([productId, item]) => {
-            // Filter out invalid entries
-            return (
-              productId && 
-              productId !== "0" && 
-              item && 
-              item.quantity > 0
-            );
-          })
-          .map(([productId, item]) => ({
-            productId,
-            quantity: item.quantity,
-            shadeNumber: item.shadeNumber || "",
-          }));
-  
-        console.log("📤 Syncing cart to server:", cartArray);
-  
-        const response = await axios.post(
+        syncing.current = true;
+        await axios.post(
           "/api/cart/update",
           { cartData: cartArray },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        if (response.data.success) {
-          console.log("✅ Cart synced successfully");
-        }
+        console.log("Cart synced successfully");
       } catch (error) {
-        console.error("❌ Error syncing cart:", error);
-        toast.error("Failed to sync cart");
+        console.error("Cart sync failed:", error);
       } finally {
         syncing.current = false;
       }
@@ -138,12 +128,9 @@ export const AppContextProvider = ({ children }) => {
     [user, getToken]
   );
 
-  // ✅ Add to Cart
-  const addToCart = async (productId, extraData = {}) => {
-    if (!productId || productId === "0") {
-      toast.error("Invalid product");
-      return;
-    }
+  // ✅ Add item
+  const addToCart = (productId, extra = {}) => {
+    if (!productId) return toast.error("Invalid product");
 
     setCartItems((prev) => {
       const existing = prev[productId];
@@ -151,63 +138,39 @@ export const AppContextProvider = ({ children }) => {
         ...prev,
         [productId]: {
           quantity: existing ? existing.quantity + 1 : 1,
-          shadeNumber: extraData.shadeNumber || existing?.shadeNumber || "",
+          shadeNumber: extra.shadeNumber || existing?.shadeNumber || "",
         },
       };
-      
-      // ✅ Sync after state updates
-      if (user) {
-        // Use a small delay to ensure state is updated
-        setTimeout(() => syncCartToServer(updated), 100);
-      }
-      
+      user && syncCartToServer(updated);
       return updated;
     });
 
-    toast.success("Added to cart!");
+    toast.success("🛒 Added to cart!");
   };
 
-  // ✅ Remove from Cart
-  const removeFromCart = async (productId) => {
+  // ✅ Remove item
+  const removeFromCart = (productId) => {
     setCartItems((prev) => {
       const updated = { ...prev };
       delete updated[productId];
-      
-      if (user) {
-        setTimeout(() => syncCartToServer(updated), 100);
-      }
-      
+      user && syncCartToServer(updated);
       return updated;
     });
-
-    toast.success("Item removed from cart!");
   };
 
-  // ✅ Update Quantity (FIXED)
-  const updateCartQuantity = async (productId, quantity) => {
+  // ✅ Update quantity
+  const updateCartQuantity = (productId, quantity) => {
     setCartItems((prev) => {
       const updated = { ...prev };
-      
-      if (quantity > 0) {
-        // Update quantity while preserving shadeNumber
-        updated[productId] = { 
-          ...prev[productId], 
-          quantity 
-        };
-      } else {
-        // Remove item if quantity is 0
-        delete updated[productId];
-      }
-      
-      if (user) {
-        setTimeout(() => syncCartToServer(updated), 100);
-      }
-      
+      if (quantity > 0)
+        updated[productId] = { ...prev[productId], quantity };
+      else delete updated[productId];
+      user && syncCartToServer(updated);
       return updated;
     });
   };
 
-  // ✅ Totals
+  // ✅ Helpers
   const getCartCount = useCallback(
     () => Object.values(cartItems).reduce((sum, i) => sum + i.quantity, 0),
     [cartItems]
@@ -218,7 +181,6 @@ export const AppContextProvider = ({ children }) => {
       const product =
         products.find((p) => String(p._id) === id) ||
         paintProducts.find((p) => String(p._id) === id);
-
       const price = product?.offerPrice || product?.price || 0;
       return total + price * item.quantity;
     }, 0);
