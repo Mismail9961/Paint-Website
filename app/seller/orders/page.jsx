@@ -64,8 +64,6 @@ const Orders = () => {
 
   // ✅ Handle delete order
   const handleDelete = async (orderId) => {
-    if (!confirm("Are you sure you want to delete this order?")) return;
-
     try {
       const res = await fetch("/api/order/admin-list", {
         method: "DELETE",

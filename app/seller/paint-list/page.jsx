@@ -87,7 +87,7 @@ const PaintList = () => {
                       <td className="px-4 py-3">{paint.quantity}</td>
                       <td className="px-4 py-3 max-sm:hidden">
                         <button
-                          onClick={() => router.push(`/paint/${paint._id}`)}
+                          onClick={() => router.push(`/product/${paint._id}`)}
                           className="flex items-center gap-1 px-1.5 md:px-3.5 py-2 bg-orange-600 text-white rounded-md"
                         >
                           <span className="hidden md:block">View</span>
