@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
@@ -12,14 +12,22 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // 🧭 Fetch Orders
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/order/list");
       const data = await res.json();
 
-      if (!data.success) throw new Error(data.message || "Failed to fetch orders");
+      console.log("📦 Orders:", data);
+      
+      // Debug: Check first order structure
+      if (data.orders && data.orders.length > 0) {
+        console.log("🔍 First order item:", data.orders[0].items[0]);
+        console.log("🔍 Product object:", data.orders[0].items[0]?.product);
+      }
 
+      if (!data.success) throw new Error(data.message || "Failed to fetch orders");
       setOrders(data.orders || []);
     } catch (err) {
       console.error("❌ Fetch orders error:", err);
@@ -33,13 +41,34 @@ const MyOrders = () => {
     fetchOrders();
   }, []);
 
-  // 🧠 Helper: safely get first available image
+  // 🧠 Helper: safely get first image from either paintProduct or product
   const getOrderImage = (order) => {
     for (const item of order.items || []) {
-      const img = item?.paintProduct?.images?.[0];
-      if (img) return img;
+      // Check paintProduct first
+      const paintImg = item?.paintProduct?.images?.[0];
+      if (paintImg) {
+        return paintImg.startsWith("http") ? paintImg : `/uploads/${paintImg}`;
+      }
+      
+      // Then check regular product - try multiple possible field names
+      const product = item?.product;
+      if (product) {
+        // Try different image field names
+        const productImg = 
+          product.images?.[0] || 
+          product.image?.[0] || 
+          product.image || 
+          product.picture || 
+          product.imageUrl;
+        
+        if (productImg) {
+          // Handle both string and array
+          const imgUrl = Array.isArray(productImg) ? productImg[0] : productImg;
+          return imgUrl.startsWith("http") ? imgUrl : `/uploads/${imgUrl}`;
+        }
+      }
     }
-    return "/box_icon.png"; // fallback image
+    return "https://cdn-icons-png.flaticon.com/512/4341/4341062.png";
   };
 
   return (
@@ -62,28 +91,47 @@ const MyOrders = () => {
                   key={order._id || index}
                   className="flex flex-col md:flex-row gap-5 justify-between p-5 border-b border-gray-300"
                 >
-                  {/* 🧱 Order Items */}
+                  {/* 🧱 Product Details */}
                   <div className="flex-1 flex gap-5 max-w-80">
-                    <Image
-                      className="max-w-16 max-h-16 object-cover rounded-md"
-                      src={getOrderImage(order)}
-                      alt="product image"
-                      width={64}
-                      height={64}
-                    />
+                    <div className="w-16 h-16 relative">
+                      <Image
+                        src={getOrderImage(order)}
+                        alt="product image"
+                        fill
+                        className="object-cover rounded-md"
+                        onError={(e) => {
+                          e.target.src = "https://cdn-icons-png.flaticon.com/512/4341/4341062.png";
+                        }}
+                        unoptimized
+                      />
+                    </div>
 
                     <div className="flex flex-col gap-2">
-                      {order.items.map((item, i) => (
-                        <div key={i}>
-                          <span className="font-medium text-base">
-                            Shade: {item.shadeNumber || "N/A"} × {item.quantity}
-                          </span>
-                          <span className="text-gray-500 text-sm">
-                            Price: {currency}
-                            {item.offerPrice || item.price}
-                          </span>
-                        </div>
-                      ))}
+                      {order.items.map((item, i) => {
+                        // Get product info from either paintProduct or product
+                        const product = item.paintProduct || item.product;
+                        const isPaint = !!item.paintProduct;
+                        
+                        // Fallback: If no product reference, show basic item info
+                        const productName = product?.name || "Product";
+                        const hasShade = item.shadeNumber && item.shadeNumber !== "N/A";
+                        
+                        return (
+                          <div key={i}>
+                            <span className="font-medium text-base">
+                              {productName}
+                              <br />
+                              {hasShade && `Shade: ${item.shadeNumber} × `}
+                              {!hasShade && "Quantity: "}
+                              {item.quantity}
+                            </span>
+                            <span className="text-gray-500 text-sm block">
+                              Price: {currency}
+                              {item.offerPrice || item.price}
+                            </span>
+                          </div>
+                        );
+                      })}
                       <span className="text-xs text-gray-500">
                         Items: {order.items.length}
                       </span>
@@ -104,13 +152,13 @@ const MyOrders = () => {
                   </div>
 
                   {/* 💰 Amount */}
-                  <p className="font-medium my-auto">
+                  <p className="font-medium my-auto whitespace-nowrap">
                     {currency}
                     {order.amount}
                   </p>
 
                   {/* 🕒 Status + Info */}
-                  <div className="text-sm">
+                  <div className="text-sm text-right md:text-left">
                     <p className="flex flex-col">
                       <span>Status: {order.status}</span>
                       <span>

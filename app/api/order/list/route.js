@@ -6,7 +6,6 @@ import PaintOrder from "@/models/PaintOrder";
 export async function GET(request) {
   try {
     await connectDB();
-
     const { userId } = getAuth(request);
 
     if (!userId) {
@@ -16,19 +15,27 @@ export async function GET(request) {
       );
     }
 
-    // 🖌️ Fetch all paint orders of the user
+    // 🧩 Fetch all paint + product orders with proper population
     const orders = await PaintOrder.find({ userId })
       .populate({
         path: "items.paintProduct",
         model: "PaintProduct",
         select: "name price offerPrice images shadeNumber",
       })
-      .sort({ createdAt: -1 }); // most recent first
+      .populate({
+        path: "items.product",
+        model: "Product",
+        select: "name price offerPrice image images picture imageUrl", // Include all possible image field names
+      })
+      .sort({ createdAt: -1 })
+      .lean(); // Add lean() for better performance and to ensure proper data structure
 
-    return NextResponse.json({
-      success: true,
-      orders,
-    });
+    // Debug: Log first order to see structure
+    if (orders.length > 0) {
+      console.log("🔍 First order items:", JSON.stringify(orders[0].items, null, 2));
+    }
+
+    return NextResponse.json({ success: true, orders });
   } catch (error) {
     console.error("❌ Fetch orders error:", error);
     return NextResponse.json(

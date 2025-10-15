@@ -33,22 +33,35 @@ export async function POST(request) {
       PaintProduct.find({ _id: { $in: productIds } }),
     ]);
 
-    const allProducts = [...normalProducts, ...paintProducts];
+    // Create lookup maps for easier identification
+    const normalProductMap = new Map(normalProducts.map(p => [String(p._id), p]));
+    const paintProductMap = new Map(paintProducts.map(p => [String(p._id), p]));
 
     let totalAmount = 0;
 
     const orderItems = items
       .map((item) => {
-        const product = allProducts.find(
-          (p) => String(p._id) === String(item.product)
-        );
-        if (!product) return null;
+        const productId = String(item.product);
+        
+        // Check if it's a paint product or normal product
+        const isPaintProduct = paintProductMap.has(productId);
+        const isNormalProduct = normalProductMap.has(productId);
+        
+        if (!isPaintProduct && !isNormalProduct) {
+          console.log(`⚠️ Product not found: ${productId}`);
+          return null;
+        }
+
+        const product = isPaintProduct 
+          ? paintProductMap.get(productId) 
+          : normalProductMap.get(productId);
 
         const price = product.offerPrice || product.price || 0;
         totalAmount += price * item.quantity;
 
         return {
-          paintProduct: product._id,
+          paintProduct: isPaintProduct ? product._id : null,
+          product: isNormalProduct ? product._id : null,
           shadeNumber: item.shadeNumber || "N/A",
           quantity: item.quantity,
           price,
@@ -75,7 +88,7 @@ export async function POST(request) {
 
     await User.updateOne({ userId }, { $set: { cartItems: [] } });
 
-    console.log("Order saved:", newOrder._id);
+    console.log("✅ Order saved:", newOrder._id);
 
     return NextResponse.json({
       success: true,
@@ -83,7 +96,7 @@ export async function POST(request) {
       order: newOrder,
     });
   } catch (error) {
-    console.error("Error placing order:", error);
+    console.error("❌ Error placing order:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Internal Server Error" },
       { status: 500 }

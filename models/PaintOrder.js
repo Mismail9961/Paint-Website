@@ -22,36 +22,21 @@ const PaintOrderSchema = new mongoose.Schema(
         paintProduct: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "PaintProduct",
-          required: true,
+          default: null,
         },
-        shadeNumber: {
-          type: String,
-          required: true,
-          trim: true,
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          default: null,
         },
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
-        price: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-        offerPrice: {
-          type: Number,
-          default: 0,
-          min: 0,
-        },
+        shadeNumber: { type: String, trim: true, default: "" },
+        quantity: { type: Number, required: true, min: 1 },
+        price: { type: Number, required: true, min: 0 },
+        offerPrice: { type: Number, default: 0, min: 0 },
       },
     ],
 
-    amount: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
+    amount: { type: Number, required: true, min: 0 },
 
     status: {
       type: String,
@@ -59,10 +44,7 @@ const PaintOrderSchema = new mongoose.Schema(
       default: "Order Placed",
     },
 
-    date: {
-      type: Date,
-      default: Date.now,
-    },
+    date: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
