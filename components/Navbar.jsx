@@ -1,124 +1,117 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { assets } from "@/assets/assets";
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
-import { useClerk, UserButton, useUser } from "@clerk/nextjs";
-import { ShoppingCart, ShoppingBag, Home } from "lucide-react"; 
+import { useClerk, UserButton } from "@clerk/nextjs";
+import { ShoppingCart, Menu } from "lucide-react";
+import axios from "axios";
 
 const Navbar = () => {
   const { isSeller, router, user } = useAppContext();
   const { openSignIn } = useClerk();
-  const { isSignedIn } = useUser();
+  const [cartCount, setCartCount] = useState(0);
+
+  // Fetch cart count when user logs in
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      try {
+        if (!user) return setCartCount(0);
+
+        const res = await axios.get(`/api/user/${user.id}/cart`);
+        setCartCount(res.data?.cartCount || 0);
+      } catch (err) {
+        console.error("Error fetching cart count:", err);
+      }
+    };
+
+    fetchCartCount();
+  }, [user]);
 
   return (
-    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700">
-      {/* Logo */}
-      <Image
-        className="cursor-pointer w-28 md:w-32"
-        onClick={() => router.push("/")}
-        src={assets.logo}
-        alt="logo"
-      />
+    <nav className="bg-gradient-to-r from-blue-800 via-indigo-700 to-indigo-600 text-white sticky top-0 z-50 shadow-md">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-12 py-4">
+        {/* Logo */}
+        <div
+          className="flex items-center gap-2 cursor-pointer select-none"
+          onClick={() => router.push("/")}
+        >
+          <Image
+            src={assets.logo}
+            alt="logo"
+            className="w-24 md:w-32 object-contain"
+          />
+        </div>
 
-      {/* Links - Desktop */}
-      <div className="flex items-center gap-4 lg:gap-8 max-md:hidden">
-        <Link href="/" className="hover:text-gray-900 transition">
-          Home
-        </Link>
-        <Link href="/all-products" className="hover:text-gray-900 transition">
-          Shop
-        </Link>
-        <Link href="/" className="hover:text-gray-900 transition">
-          About Us
-        </Link>
-        <Link href="/" className="hover:text-gray-900 transition">
-          Contact
-        </Link>
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-8">
+          <Link href="/" className="hover:text-yellow-400 transition font-medium">
+            Home
+          </Link>
+          <Link
+            href="/all-products"
+            className="hover:text-yellow-400 transition font-medium"
+          >
+            Shop
+          </Link>
+          <Link href="/about" className="hover:text-yellow-400 transition font-medium">
+            About
+          </Link>
+          <Link
+            href="/contact"
+            className="hover:text-yellow-400 transition font-medium"
+          >
+            Contact
+          </Link>
 
-        {isSeller && (
-          <button
-            onClick={() => router.push("/seller")}
-            className="text-xs border px-4 py-1.5 rounded-full"
-          >
-            Seller Dashboard
-          </button>
-        )}
-      </div>
+          {isSeller && (
+            <button
+              onClick={() => router.push("/seller")}
+              className="text-xs bg-yellow-400 text-blue-900 font-semibold px-4 py-1.5 rounded-full hover:bg-yellow-300 transition"
+            >
+              Seller Dashboard
+            </button>
+          )}
+        </div>
 
-      {/* Right Section - Desktop */}
-      <ul className="hidden md:flex items-center gap-4">
-        <Image
-          className="w-4 h-4"
-          src={assets.search_icon}
-          alt="search icon"
-        />
-        {user ? (
-          <UserButton>
-            <UserButton.MenuItems>
-              <UserButton.Action
-                label="Cart"
-                labelIcon={<ShoppingCart size={18} />}
-                onClick={() => router.push("/cart")}
-              />
-              <UserButton.Action
-                label="My Orders"
-                labelIcon={<ShoppingBag size={18} />}
-                onClick={() => router.push("/my-orders")}
-              />
-            </UserButton.MenuItems>
-          </UserButton>
-        ) : (
+        {/* Right Section */}
+        <div className="flex items-center gap-4">
+          {/* Cart Icon */}
           <button
-            onClick={openSignIn}
-            className="flex items-center gap-2 hover:text-gray-900 transition"
+            onClick={() => router.push("/cart")}
+            className="relative hover:scale-110 transition-transform"
           >
-            <Image src={assets.user_icon} alt="user icon" />
-            Account
+            <ShoppingCart size={22} />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-yellow-400 text-blue-900 text-xs font-bold rounded-full px-1.5">
+                {cartCount}
+              </span>
+            )}
           </button>
-        )}
-      </ul>
 
-      {/* Mobile Menu */}
-      <div className="flex items-center md:hidden gap-3">
-        {isSeller && (
-          <button
-            onClick={() => router.push("/seller")}
-            className="text-xs font-semibold border border-indigo-500 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-500 hover:text-white transition"
-          >
-            Seller Dashboard
+          {/* User Auth */}
+          {user ? (
+            <UserButton afterSignOutUrl="/" />
+          ) : (
+            <button
+              onClick={openSignIn}
+              className="flex items-center gap-2 font-medium hover:text-yellow-400 transition"
+            >
+              <Image
+                src={assets.user_icon}
+                alt="user icon"
+                className="w-5 h-5 object-contain"
+              />
+              Account
+            </button>
+          )}
+
+          {/* Mobile Menu */}
+          <button className="md:hidden hover:text-yellow-400 transition">
+            <Menu size={26} />
           </button>
-        )}
-        {user ? (
-          <UserButton>
-            <UserButton.MenuItems>
-              <UserButton.Action
-                label="Home"
-                labelIcon={<Home size={18} />}
-                onClick={() => router.push("/")}
-              />
-              <UserButton.Action
-                label="Cart"
-                labelIcon={<ShoppingCart size={18} />}
-                onClick={() => router.push("/cart")}
-              />
-              <UserButton.Action
-                label="My Orders"
-                labelIcon={<ShoppingBag size={18} />}
-                onClick={() => router.push("/my-orders")}
-              />
-            </UserButton.MenuItems>
-          </UserButton>
-        ) : (
-          <button
-            onClick={openSignIn}
-            className="flex items-center gap-2 hover:text-gray-900 transition"
-          >
-            <Image src={assets.user_icon} alt="user icon" />
-            Account
-          </button>
-        )}
+        </div>
       </div>
     </nav>
   );

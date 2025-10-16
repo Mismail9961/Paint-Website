@@ -36,11 +36,8 @@ const Product = () => {
 
   if (!productData) return <Loading />;
 
-  const images = [
-    ...(productData.images || []),
-    ...(productData.shadeCardImages || []),
-  ].filter(Boolean);
-
+  // ✅ Only use regular images (no shadeCardImages)
+  const images = productData.images?.filter(Boolean) || [];
   const main = mainImage || images[0] || assets.placeholder;
 
   const handleBuyNow = () => {
@@ -177,7 +174,7 @@ const Product = () => {
               Hover to zoom and inspect shade details closely.
             </p>
 
-            {/* SHADE IMAGES */}
+            {/* SHADE IMAGES (only shown in modal) */}
             <div className="flex flex-wrap justify-center items-center gap-8 mt-10">
               {productData.shadeCardImages?.map((img, i) => (
                 <div

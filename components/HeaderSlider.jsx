@@ -1,32 +1,33 @@
+"use client";
 import React, { useState, useEffect } from "react";
-import { assets } from "@/assets/assets";
 import Image from "next/image";
+import { assets } from "@/assets/assets";
 
 const HeaderSlider = () => {
   const sliderData = [
     {
       id: 1,
-      title: "Experience Pure Sound - Your Perfect Headphones Awaits!",
-      offer: "Limited Time Offer 30% Off",
-      buttonText1: "Buy now",
-      buttonText2: "Find more",
-      imgSrc: assets.header_headphone_image,
+      title: "Transform Your Home with ICI Paints",
+      offer: "Flat 25% Off on Interior Wall Paints",
+      buttonText1: "Shop Now",
+      buttonText2: "View Shades",
+      imgSrc: assets.GobisAqueousMattFinish,
     },
     {
       id: 2,
-      title: "Next-Level Gaming Starts Here - Discover PlayStation 5 Today!",
-      offer: "Hurry up only few lefts!",
-      buttonText1: "Shop Now",
-      buttonText2: "Explore Deals",
-      imgSrc: assets.header_playstation_image,
+      title: "Add Life to Walls with Gobi’s Paints",
+      offer: "Buy 2 Get 1 Free – Limited Time!",
+      buttonText1: "Order Now",
+      buttonText2: "Explore Colors",
+      imgSrc: assets.GobisGlossEnamel,
     },
     {
       id: 3,
-      title: "Power Meets Elegance - Apple MacBook Pro is Here for you!",
-      offer: "Exclusive Deal 40% Off",
-      buttonText1: "Order Now",
-      buttonText2: "Learn More",
-      imgSrc: assets.header_macbook_image,
+      title: "Diamond Paints – Shine that Lasts for Years",
+      offer: "Premium Exterior Paints Starting Rs. 4,999",
+      buttonText1: "Discover More",
+      buttonText2: "View Collection",
+      imgSrc: assets.GobisGoldAqueousMattFinish,
     },
   ];
 
@@ -35,65 +36,82 @@ const HeaderSlider = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % sliderData.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
   }, [sliderData.length]);
 
-  const handleSlideChange = (index) => {
-    setCurrentSlide(index);
-  };
+  const handleSlideChange = (index) => setCurrentSlide(index);
 
   return (
-    <div className="overflow-hidden relative w-full">
+    <section className="overflow-hidden mt-10 relative w-full">
+      {/* Slides */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
-        style={{
-          transform: `translateX(-${currentSlide * 100}%)`,
-        }}
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {sliderData.map((slide, index) => (
           <div
             key={slide.id}
-            className="flex flex-col-reverse md:flex-row items-center justify-between bg-[#E6E9F2] py-8 md:px-14 px-5 mt-6 rounded-xl min-w-full"
+            className="flex flex-col-reverse md:flex-row items-center justify-between 
+                       bg-gradient-to-r from-[#FACC15] via-[#fadb3e] to-[#393AC3] 
+                       py-12 md:px-20 px-6 rounded-2xl min-w-full shadow-lg"
           >
-            <div className="md:pl-8 mt-10 md:mt-0">
-              <p className="md:text-base text-orange-600 pb-1">{slide.offer}</p>
-              <h1 className="max-w-lg md:text-[40px] md:leading-[48px] text-2xl font-semibold">
+            {/* Text Section */}
+            <div className="md:pl-10 mt-10 md:mt-0 text-white drop-shadow-lg">
+              <p className="text-white/90 font-medium pb-2 text-sm md:text-base">
+                {slide.offer}
+              </p>
+              <h1 className="max-w-lg md:text-5xl text-3xl font-semibold leading-tight">
                 {slide.title}
               </h1>
-              <div className="flex items-center mt-4 md:mt-6 ">
-                <button className="md:px-10 px-7 md:py-2.5 py-2 bg-orange-600 rounded-full text-white font-medium">
+
+              <div className="flex items-center mt-6 gap-4">
+                <button className="md:px-10 px-7 md:py-3 py-2 bg-white text-[#393AC3] hover:bg-[#FACC15] hover:text-[#393AC3] rounded-full font-semibold transition-all shadow-md">
                   {slide.buttonText1}
                 </button>
-                <button className="group flex items-center gap-2 px-6 py-2.5 font-medium">
+                <button className="group flex items-center gap-2 px-6 py-2.5 font-medium text-white hover:text-black transition">
                   {slide.buttonText2}
-                  <Image className="group-hover:translate-x-1 transition" src={assets.arrow_icon} alt="arrow_icon" />
+                  <Image
+                    className="group-hover:translate-x-2 mt-1 transition"
+                    src={assets.arrow_icon}
+                    alt="arrow icon"
+                    width={18}
+                    height={18}
+                  />
                 </button>
               </div>
             </div>
+
+            {/* Image Section */}
             <div className="flex items-center flex-1 justify-center">
               <Image
-                className="md:w-72 w-48"
+                className="md:w-96 w-60 object-contain drop-shadow-2xl"
                 src={slide.imgSrc}
                 alt={`Slide ${index + 1}`}
+                width={400}
+                height={400}
+                priority
               />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-center gap-2 mt-8">
+      {/* Dots */}
+      <div className="flex items-center justify-center mb-5 gap-2 mt-6">
         {sliderData.map((_, index) => (
           <div
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`h-2 w-2 rounded-full cursor-pointer ${
-              currentSlide === index ? "bg-orange-600" : "bg-gray-500/30"
+            className={`h-3 w-3 rounded-full cursor-pointer transition-all ${
+              currentSlide === index
+                ? "bg-[#393AC3] scale-125 shadow-md"
+                : "bg-[#FACC15]/50 hover:bg-[#393AC3]/60"
             }`}
           ></div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

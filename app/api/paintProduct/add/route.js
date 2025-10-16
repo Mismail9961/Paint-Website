@@ -42,7 +42,7 @@ export async function POST(request) {
     }
 
     // Validate image counts
-    if (!paintFiles || paintFiles.length !== 2) {
+    if (!paintFiles || paintFiles.length !== 1) {
       return NextResponse.json(
         { error: "Exactly 2 paint images are required." },
         { status: 400 }

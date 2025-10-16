@@ -9,8 +9,8 @@ const paintProductSchema = new mongoose.Schema(
     images: {
       type: [String],
       validate: {
-        validator: (arr) => arr.length === 2,
-        message: "Exactly 2 paint images are required",
+        validator: (arr) => arr.length === 1,
+        message: "Exactly 1 paint images are required",
       },
       required: true,
     },
