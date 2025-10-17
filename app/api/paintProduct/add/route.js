@@ -24,6 +24,7 @@ export async function POST(request) {
     const description = formData.get("description");
     const quantity = formData.get("quantity");
     const category = formData.get("category");
+    const brandCategory = formData.get("brandCategory"); // 🟢 NEW FIELD
     const price = formData.get("price");
     const offerPrice = formData.get("offerPrice");
 
@@ -31,11 +32,11 @@ export async function POST(request) {
     const shadeFiles = formData.getAll("shadeCardImages");
 
     // Validate required fields
-    if (!title || !description || !quantity || !category || !price) {
+    if (!title || !description || !quantity || !category || !price || !brandCategory) {
       return NextResponse.json(
         {
           error:
-            "All fields (title, description, quantity, category, and price) are required.",
+            "All fields (title, description, quantity, category, brandCategory, and price) are required.",
         },
         { status: 400 }
       );
@@ -44,7 +45,7 @@ export async function POST(request) {
     // Validate image counts
     if (!paintFiles || paintFiles.length !== 1) {
       return NextResponse.json(
-        { error: "Exactly 2 paint images are required." },
+        { error: "Exactly 1 paint image is required." },
         { status: 400 }
       );
     }
@@ -112,6 +113,7 @@ export async function POST(request) {
       price: numericPrice,
       offerPrice: numericOfferPrice,
       category,
+      brandCategory, // 🟢 NEW FIELD SAVED HERE
       images: paintUploadResults.map((r) => r.secure_url),
       shadeCardImages: shadeUploadResults.map((r) => r.secure_url),
       createdBy: String(userId),

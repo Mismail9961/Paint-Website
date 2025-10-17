@@ -33,27 +33,27 @@ export async function POST(request) {
       PaintProduct.find({ _id: { $in: productIds } }),
     ]);
 
-    // Create lookup maps for easier identification
-    const normalProductMap = new Map(normalProducts.map(p => [String(p._id), p]));
-    const paintProductMap = new Map(paintProducts.map(p => [String(p._id), p]));
+    // Create lookup maps for faster lookup
+    const normalProductMap = new Map(normalProducts.map((p) => [String(p._id), p]));
+    const paintProductMap = new Map(paintProducts.map((p) => [String(p._id), p]));
 
     let totalAmount = 0;
 
     const orderItems = items
       .map((item) => {
         const productId = String(item.product);
-        
-        // Check if it's a paint product or normal product
+
+        // Identify product type
         const isPaintProduct = paintProductMap.has(productId);
         const isNormalProduct = normalProductMap.has(productId);
-        
+
         if (!isPaintProduct && !isNormalProduct) {
           console.log(`⚠️ Product not found: ${productId}`);
           return null;
         }
 
-        const product = isPaintProduct 
-          ? paintProductMap.get(productId) 
+        const product = isPaintProduct
+          ? paintProductMap.get(productId)
           : normalProductMap.get(productId);
 
         const price = product.offerPrice || product.price || 0;
@@ -62,6 +62,7 @@ export async function POST(request) {
         return {
           paintProduct: isPaintProduct ? product._id : null,
           product: isNormalProduct ? product._id : null,
+          brandCategory: isPaintProduct ? product.brandCategory || "Other" : null, // 🟢 Added
           shadeNumber: item.shadeNumber || "N/A",
           quantity: item.quantity,
           price,
@@ -86,6 +87,7 @@ export async function POST(request) {
       date: new Date(),
     });
 
+    // Clear user's cart
     await User.updateOne({ userId }, { $set: { cartItems: [] } });
 
     console.log("✅ Order saved:", newOrder._id);

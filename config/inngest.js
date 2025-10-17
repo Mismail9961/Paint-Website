@@ -113,6 +113,8 @@ export const createPaintOrder = inngest.createFunction(
           address,
           items: items.map((i) => ({
             paintProduct: i.paintProduct,
+            product: i.product || null,
+            brandCategory: i.brandCategory || "Other", // 🟢 added brandCategory
             shadeNumber: i.shadeNumber || "N/A",
             quantity: i.quantity,
             price: i.price,

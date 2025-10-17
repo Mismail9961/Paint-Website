@@ -10,7 +10,7 @@ const paintProductSchema = new mongoose.Schema(
       type: [String],
       validate: {
         validator: (arr) => arr.length === 1,
-        message: "Exactly 1 paint images are required",
+        message: "Exactly 1 paint image is required",
       },
       required: true,
     },
@@ -19,6 +19,14 @@ const paintProductSchema = new mongoose.Schema(
       type: String,
       enum: ["gallon", "drum", "quarter"],
       required: true,
+    },
+
+    // 🟢 New field added here
+    brandCategory: {
+      type: String,
+      enum: ["ICI", "Dulux", "Brighto", "Diamond", "Other"], // optional preset list
+      required: true,
+      trim: true,
     },
 
     shadeCardImages: {
