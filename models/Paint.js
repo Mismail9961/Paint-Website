@@ -24,7 +24,7 @@ const paintProductSchema = new mongoose.Schema(
     // 🟢 New field added here
     brandCategory: {
       type: String,
-      enum: ["ICI", "Dulux", "Brighto", "Diamond", "Other"], // optional preset list
+      enum: ["ICI", "Dulux", "Brighto", "Diamond", "Gobis" , "Other"], // optional preset list
       required: true,
       trim: true,
     },

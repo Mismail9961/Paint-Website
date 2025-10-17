@@ -5,12 +5,13 @@ import { assets } from "@/assets/assets";
 import { toast } from "react-hot-toast";
 
 const AddPaint = () => {
-  const [paintImages, setPaintImages] = useState([null, null]);
+  const [paintImage, setPaintImage] = useState(null);
   const [shadeImages, setShadeImages] = useState([null, null]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
   const [category, setCategory] = useState("gallon");
+  const [brandCategory, setBrandCategory] = useState("ICI");
   const [price, setPrice] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,9 +19,8 @@ const AddPaint = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required images
-    if (paintImages.some((img) => img === null) || shadeImages.some((img) => img === null)) {
-      toast.error("Please upload 2 paint images and 2 shade card images.");
+    if (!paintImage || shadeImages.some((img) => img === null)) {
+      toast.error("Please upload 1 paint image and 2 shade card images.");
       return;
     }
 
@@ -31,13 +31,11 @@ const AddPaint = () => {
       formData.append("description", description);
       formData.append("quantity", quantity);
       formData.append("category", category);
+      formData.append("brandCategory", brandCategory);
       formData.append("price", price);
       formData.append("offerPrice", offerPrice);
 
-      paintImages.forEach((file) => {
-        if (file) formData.append("images", file);
-      });
-
+      formData.append("images", paintImage);
       shadeImages.forEach((file) => {
         if (file) formData.append("shadeCardImages", file);
       });
@@ -50,15 +48,15 @@ const AddPaint = () => {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success("✅ Paint product added successfully!");
-        // Reset form
+        toast.success("Paint product added successfully!");
         setTitle("");
         setDescription("");
         setQuantity("");
         setCategory("gallon");
+        setBrandCategory("ICI");
         setPrice("");
         setOfferPrice("");
-        setPaintImages([null, null]);
+        setPaintImage(null);
         setShadeImages([null, null]);
       } else {
         toast.error(data.error || "Something went wrong");
@@ -72,39 +70,30 @@ const AddPaint = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen flex flex-col items-center py-8">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded-2xl md:p-10 p-5 space-y-6 w-full max-w-lg border border-gray-200"
-      >
-        <h2 className="text-2xl font-semibold text-center text-gray-700">Add Paint Product</h2>
+    <div className="flex-1 min-h-screen flex flex-col py-8 px-8 md:px-16 lg:px-24">
+      <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-2xl">
+        <h2 className="text-2xl font-semibold text-gray-800">Add Paint Product</h2>
 
-        {/* Paint Images */}
+        {/* Paint Image */}
         <div>
-          <p className="text-base font-medium">Paint Images (2 required)</p>
+          <p className="text-base font-medium">Paint Image (1 required)</p>
           <div className="flex flex-wrap items-center gap-3 mt-2">
-            {paintImages.map((file, index) => (
-              <label key={index} htmlFor={`paintImage${index}`}>
-                <input
-                  type="file"
-                  id={`paintImage${index}`}
-                  hidden
-                  accept="image/*"
-                  onChange={(e) => {
-                    const updated = [...paintImages];
-                    updated[index] = e.target.files[0];
-                    setPaintImages(updated);
-                  }}
-                />
-                <Image
-                  className="max-w-24 cursor-pointer border rounded-lg hover:opacity-90"
-                  src={file ? URL.createObjectURL(file) : assets.upload_area}
-                  alt="Paint image"
-                  width={100}
-                  height={100}
-                />
-              </label>
-            ))}
+            <label htmlFor="paintImage">
+              <input
+                type="file"
+                id="paintImage"
+                hidden
+                accept="image/*"
+                onChange={(e) => setPaintImage(e.target.files[0])}
+              />
+              <Image
+                className="max-w-24 cursor-pointer rounded-lg border hover:opacity-90"
+                src={paintImage ? URL.createObjectURL(paintImage) : assets.upload_area}
+                alt="Paint image"
+                width={100}
+                height={100}
+              />
+            </label>
           </div>
         </div>
 
@@ -126,9 +115,9 @@ const AddPaint = () => {
                   }}
                 />
                 <Image
-                  className="max-w-24 cursor-pointer border rounded-lg hover:opacity-90"
+                  className="max-w-24 cursor-pointer rounded-lg border hover:opacity-90"
                   src={file ? URL.createObjectURL(file) : assets.upload_area}
-                  alt="Shade image"
+                  alt={`Shade ${index + 1}`}
                   width={100}
                   height={100}
                 />
@@ -169,8 +158,8 @@ const AddPaint = () => {
           />
         </div>
 
-        {/* Quantity & Category */}
-        <div className="flex items-center gap-5 flex-wrap">
+        {/* Quantity, Category, Brand */}
+        <div className="flex flex-wrap gap-5">
           <div className="flex flex-col gap-1 w-32">
             <label className="text-base font-medium" htmlFor="quantity">
               Quantity
@@ -185,6 +174,7 @@ const AddPaint = () => {
               required
             />
           </div>
+
           <div className="flex flex-col gap-1 w-32">
             <label className="text-base font-medium" htmlFor="category">
               Category
@@ -198,6 +188,26 @@ const AddPaint = () => {
               <option value="gallon">Gallon</option>
               <option value="drum">Drum</option>
               <option value="quarter">Quarter</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1 w-40">
+            <label className="text-base font-medium" htmlFor="brandCategory">
+              Brand
+            </label>
+            <select
+              id="brandCategory"
+              className="outline-none py-2 px-3 rounded border border-gray-300"
+              onChange={(e) => setBrandCategory(e.target.value)}
+              value={brandCategory}
+              required
+            >
+              <option value="ICI">ICI</option>
+              <option value="Dulux">Dulux</option>
+              <option value="Brighto">Brighto</option>
+              <option value="Diamond">Diamond</option>
+              <option value="Gobis">Gobis</option>
+              <option value="Other">Other</option>
             </select>
           </div>
         </div>
@@ -218,6 +228,7 @@ const AddPaint = () => {
               required
             />
           </div>
+
           <div className="flex flex-col gap-1 w-32">
             <label className="text-base font-medium" htmlFor="offerPrice">
               Offer Price (PKR)
@@ -233,11 +244,11 @@ const AddPaint = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className={`px-8 py-2.5 bg-orange-600 text-white font-medium rounded w-full transition ${
+          className={`px-8 py-2.5 bg-orange-600 text-white font-medium rounded transition ${
             loading ? "opacity-70 cursor-not-allowed" : "hover:bg-orange-700"
           }`}
         >
