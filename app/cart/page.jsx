@@ -56,27 +56,27 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar />
-
-      <div className="flex flex-col md:flex-row gap-10 px-6 md:px-16 lg:px-32 pt-14 mb-20">
+      <div className="flex flex-col md:flex-row gap-10 px-4 sm:px-8 md:px-16 lg:px-32 pt-16 pb-20 bg-gradient-to-b from-slate-50 via-white to-slate-100 min-h-screen">
         {/* LEFT SIDE */}
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-6 border-b pb-4">
-            <h2 className="text-3xl font-bold text-gray-800">
-              Your <span className="text-[#4364EE]">Cart</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 border-b border-slate-300 pb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
+              Your <span className="text-slate-600">Cart</span>
             </h2>
-            <span className="text-gray-500">{getCartCount()} item(s)</span>
+            <span className="text-slate-500 text-sm sm:text-base mt-1 sm:mt-0">
+              {getCartCount()} item(s)
+            </span>
           </div>
 
           {cartIsEmpty ? (
-            <div className="text-center text-gray-500 py-16 text-lg">
+            <div className="text-center text-slate-500 py-16 text-base sm:text-lg">
               🛒 Your cart is empty
             </div>
           ) : (
             <>
               <button
                 onClick={handleClearCart}
-                className="mb-4 text-sm text-red-500 hover:underline"
+                className="mb-4 text-sm text-red-500 hover:text-red-600 hover:underline"
               >
                 Clear Cart
               </button>
@@ -103,32 +103,32 @@ const Cart = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -15 }}
                         transition={{ duration: 0.25 }}
-                        className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border bg-white shadow-md p-4"
+                        className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4 rounded-2xl border border-slate-200 bg-neutral-50 shadow-sm p-4 hover:shadow-md transition-all"
                       >
                         {/* Product Image */}
-                        <div className="relative w-28 h-28 group">
+                        <div className="relative w-24 h-24 sm:w-28 sm:h-28 group flex-shrink-0">
                           <Image
                             src={product.images?.[0] || assets.placeholder_image}
                             alt={product.title}
                             fill
-                            className="object-cover rounded-md transition-transform duration-300 group-hover:scale-125"
+                            className="object-cover rounded-lg transition-transform duration-300 group-hover:scale-110"
                           />
                         </div>
 
                         {/* Product Details */}
-                        <div className="flex-1 text-center sm:text-left">
-                          <p className="font-semibold text-gray-800 text-lg">
+                        <div className="flex-1 text-center sm:text-left space-y-1">
+                          <p className="font-semibold text-slate-800 text-base sm:text-lg leading-tight">
                             {product.title}
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-slate-600">
                             Shade: <span className="font-medium">{shade}</span>
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-slate-600">
                             Price: Rs. {price.toFixed(2)}
                           </p>
 
                           <button
-                            className="text-xs text-red-500 mt-2 hover:underline"
+                            className="text-xs text-red-500 hover:text-red-600 mt-2"
                             onClick={() => handleRemoveItem(product._id)}
                           >
                             Remove
@@ -136,12 +136,12 @@ const Cart = () => {
                         </div>
 
                         {/* Quantity Controls */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() =>
                               updateCartQuantity(id, cartItem.quantity - 1)
                             }
-                            className="p-2 border rounded-md text-gray-700 hover:bg-gray-100"
+                            className="p-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-100"
                           >
                             -
                           </button>
@@ -152,18 +152,18 @@ const Cart = () => {
                             onChange={(e) =>
                               updateCartQuantity(id, Number(e.target.value))
                             }
-                            className="w-12 text-center border rounded-md"
+                            className="w-10 sm:w-12 text-center border border-slate-300 rounded-md text-sm text-slate-700 bg-white"
                           />
                           <button
                             onClick={() => addToCart(id)}
-                            className="p-2 border rounded-md text-gray-700 hover:bg-gray-100"
+                            className="p-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-100"
                           >
                             +
                           </button>
                         </div>
 
                         {/* Total */}
-                        <div className="font-medium text-gray-800">
+                        <div className="font-medium text-slate-800 text-sm sm:text-base text-center sm:text-right">
                           Rs. {(price * cartItem.quantity).toFixed(2)}
                         </div>
                       </motion.div>

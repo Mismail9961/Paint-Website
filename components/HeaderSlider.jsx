@@ -34,17 +34,18 @@ const HeaderSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % sliderData.length);
-    }, 4000);
+    const interval = setInterval(
+      () => setCurrentSlide((prev) => (prev + 1) % sliderData.length),
+      4000
+    );
     return () => clearInterval(interval);
   }, [sliderData.length]);
 
   const handleSlideChange = (index) => setCurrentSlide(index);
 
   return (
-    <section className="overflow-hidden mt-10 relative w-full">
-      {/* Slides */}
+    <section className="relative overflow-hidden w-full mt-10">
+      {/* Slides Wrapper */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -52,45 +53,51 @@ const HeaderSlider = () => {
         {sliderData.map((slide, index) => (
           <div
             key={slide.id}
-            className="flex flex-col-reverse md:flex-row items-center justify-between 
-                       bg-gradient-to-r from-[#FACC15] via-[#fadb3e] to-[#393AC3] 
-                       py-12 md:px-20 px-6 rounded-2xl min-w-full shadow-lg"
+            className="flex flex-col-reverse md:flex-row items-center justify-between min-w-full
+                       bg-gradient-to-br from-slate-800 via-slate-700 to-neutral-600
+                       text-white py-12 md:px-20 px-6 rounded-2xl shadow-lg relative"
           >
+            {/* Background Accent */}
+            <div className="absolute inset-0">
+              <div className="absolute top-0 left-0 w-[300px] h-[300px] bg-slate-300/10 blur-[100px]" />
+              <div className="absolute bottom-0 right-0 w-[250px] h-[250px] bg-neutral-400/10 blur-[100px]" />
+            </div>
+
             {/* Text Section */}
-            <div className="md:pl-10 mt-10 md:mt-0 text-white drop-shadow-lg">
-              <p className="text-white/90 font-medium pb-2 text-sm md:text-base">
+            <div className="relative z-10 text-center md:text-left mt-8 md:mt-0 md:pl-10 flex-1">
+              <p className="text-sm md:text-base text-slate-200 mb-2 font-medium tracking-wide">
                 {slide.offer}
               </p>
-              <h1 className="max-w-lg md:text-5xl text-3xl font-semibold leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold leading-snug md:leading-tight text-slate-50 drop-shadow">
                 {slide.title}
               </h1>
 
-              <div className="flex items-center mt-6 gap-4">
-                <button className="md:px-10 px-7 md:py-3 py-2 bg-white text-[#393AC3] hover:bg-[#FACC15] hover:text-[#393AC3] rounded-full font-semibold transition-all shadow-md">
+              <div className="flex flex-wrap justify-center md:justify-start mt-6 gap-4">
+                <button className="px-6 sm:px-8 py-2.5 bg-slate-100 text-slate-800 hover:bg-slate-300 hover:text-slate-900 rounded-full font-semibold text-sm shadow transition-all">
                   {slide.buttonText1}
                 </button>
-                <button className="group flex items-center gap-2 px-6 py-2.5 font-medium text-white hover:text-black transition">
+                <button className="group flex items-center gap-2 px-5 py-2 font-medium text-slate-100 hover:text-slate-200 transition-all">
                   {slide.buttonText2}
                   <Image
-                    className="group-hover:translate-x-2 mt-1 transition"
+                    className="group-hover:translate-x-2 transition-transform duration-300"
                     src={assets.arrow_icon}
                     alt="arrow icon"
-                    width={18}
-                    height={18}
+                    width={16}
+                    height={16}
                   />
                 </button>
               </div>
             </div>
 
             {/* Image Section */}
-            <div className="flex items-center flex-1 justify-center">
+            <div className="relative z-10 flex justify-center md:justify-end flex-1">
               <Image
-                className="md:w-96 w-60 object-contain drop-shadow-2xl"
                 src={slide.imgSrc}
                 alt={`Slide ${index + 1}`}
                 width={400}
                 height={400}
                 priority
+                className="object-contain w-52 sm:w-64 md:w-96 drop-shadow-2xl"
               />
             </div>
           </div>
@@ -98,15 +105,15 @@ const HeaderSlider = () => {
       </div>
 
       {/* Dots */}
-      <div className="flex items-center justify-center mb-5 gap-2 mt-6">
+      <div className="flex items-center justify-center gap-2 mt-6 mb-4">
         {sliderData.map((_, index) => (
           <div
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`h-3 w-3 rounded-full cursor-pointer transition-all ${
+            className={`h-2.5 w-2.5 rounded-full cursor-pointer transition-all ${
               currentSlide === index
-                ? "bg-[#393AC3] scale-125 shadow-md"
-                : "bg-[#FACC15]/50 hover:bg-[#393AC3]/60"
+                ? "bg-slate-900 scale-125 shadow-md"
+                : "bg-neutral-400/50 hover:bg-slate-500/70"
             }`}
           ></div>
         ))}

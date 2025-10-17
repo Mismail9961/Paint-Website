@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { assets } from "@/assets/assets";
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
@@ -13,54 +12,49 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
   const [cartCount, setCartCount] = useState(0);
 
-  // Fetch cart count when user logs in
   useEffect(() => {
     const fetchCartCount = async () => {
       try {
         if (!user) return setCartCount(0);
-
         const res = await axios.get(`/api/user/${user.id}/cart`);
         setCartCount(res.data?.cartCount || 0);
       } catch (err) {
         console.error("Error fetching cart count:", err);
       }
     };
-
     fetchCartCount();
   }, [user]);
 
   return (
-    <nav className="bg-gradient-to-r from-blue-800 via-indigo-700 to-indigo-600 text-white sticky top-0 z-50 shadow-md">
+    <nav className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 text-neutral-100 sticky top-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-12 py-4">
-        {/* Logo */}
+        {/* Brand Name instead of Logo */}
         <div
           className="flex items-center gap-2 cursor-pointer select-none"
           onClick={() => router.push("/")}
         >
-          <Image
-            src={assets.logo}
-            alt="logo"
-            className="w-24 md:w-32 object-contain"
-          />
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide text-neutral-100">
+          Rang<span className="text-blue-300">Reza</span>
+          </h1>
         </div>
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className="hover:text-yellow-400 transition font-medium">
+          <Link href="/" className="hover:text-slate-300 transition font-medium">
             Home
           </Link>
           <Link
             href="/all-products"
-            className="hover:text-yellow-400 transition font-medium"
+            className="hover:text-slate-300 transition font-medium"
           >
             Shop
           </Link>
-          <Link href="/about" className="hover:text-yellow-400 transition font-medium">
+          <Link href="/about" className="hover:text-slate-300 transition font-medium">
             About
           </Link>
           <Link
             href="/contact"
-            className="hover:text-yellow-400 transition font-medium"
+            className="hover:text-slate-300 transition font-medium"
           >
             Contact
           </Link>
@@ -68,7 +62,7 @@ const Navbar = () => {
           {isSeller && (
             <button
               onClick={() => router.push("/seller")}
-              className="text-xs bg-yellow-400 text-blue-900 font-semibold px-4 py-1.5 rounded-full hover:bg-yellow-300 transition"
+              className="text-xs bg-neutral-200 text-slate-900 font-semibold px-4 py-1.5 rounded-full hover:bg-neutral-300 transition"
             >
               Seller Dashboard
             </button>
@@ -84,7 +78,7 @@ const Navbar = () => {
           >
             <ShoppingCart size={22} />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-yellow-400 text-blue-900 text-xs font-bold rounded-full px-1.5">
+              <span className="absolute -top-2 -right-2 bg-neutral-200 text-slate-900 text-xs font-bold rounded-full px-1.5">
                 {cartCount}
               </span>
             )}
@@ -96,19 +90,21 @@ const Navbar = () => {
           ) : (
             <button
               onClick={openSignIn}
-              className="flex items-center gap-2 font-medium hover:text-yellow-400 transition"
+              className="flex items-center gap-2 font-medium hover:text-slate-300 transition"
             >
               <Image
-                src={assets.user_icon}
+                src="/user-icon.svg"
                 alt="user icon"
                 className="w-5 h-5 object-contain"
+                width={20}
+                height={20}
               />
               Account
             </button>
           )}
 
           {/* Mobile Menu */}
-          <button className="md:hidden hover:text-yellow-400 transition">
+          <button className="md:hidden hover:text-slate-300 transition">
             <Menu size={26} />
           </button>
         </div>
