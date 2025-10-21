@@ -11,7 +11,7 @@ const Footer = () => {
         {/* Logo & Description */}
         <div className="w-full md:w-2/5 text-center md:text-left">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide text-neutral-100">
-          Rang<span className="text-blue-300">Reza</span>
+            Rang<span className="text-blue-300">Reza</span>
           </h1>
           <p className="mt-6 text-sm leading-relaxed text-neutral-300 max-w-sm mx-auto md:mx-0">
             We bring premium paint brands like <b>Gobi’s</b>, <b>ICI</b>, and{" "}
@@ -28,16 +28,22 @@ const Footer = () => {
             </h2>
             <ul className="text-sm space-y-2">
               {["Home", "About Us", "Contact Us", "Privacy Policy"].map(
-                (link, i) => (
-                  <li key={i}>
-                    <a
-                      className="hover:text-blue-300 hover:underline transition-all"
-                      href="#"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                )
+                (link, i) => {
+                  const path =
+                    link === "Home"
+                      ? "/"
+                      : `/${link.toLowerCase().replace(/\s+/g, "-")}`;
+                  return (
+                    <li key={i}>
+                      <a
+                        href={path}
+                        className="hover:text-blue-300 hover:underline transition-all"
+                      >
+                        {link}
+                      </a>
+                    </li>
+                  );
+                }
               )}
             </ul>
           </div>
@@ -51,7 +57,7 @@ const Footer = () => {
             </h2>
             <div className="text-sm space-y-2">
               <p className="hover:text-blue-300 transition-all cursor-pointer">
-                +92 300 1234567
+                +92 331 3649161
               </p>
               <p className="hover:text-blue-300 transition-all cursor-pointer break-all">
                 support@RangReza.pk

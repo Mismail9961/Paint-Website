@@ -10,7 +10,7 @@ const AllProducts = () => {
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const categories = ["All", "ICI", "Dulux", "Brighto", "Diamond", "Gobis", "Other"];
+  const categories = ["All", "Products", "ICI", "Dulux", "Brighto", "Diamond", "Gobis"];
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -34,11 +34,17 @@ const AllProducts = () => {
 
   const allProducts = [...(products || []), ...(paintProducts || [])];
 
-  // Filter by brand category
-  const filteredProducts =
-    activeCategory === "All"
-      ? allProducts
-      : allProducts.filter((p) => p.brandCategory === activeCategory);
+  // Filter by category
+  const filteredProducts = (() => {
+    if (activeCategory === "All") {
+      return allProducts;
+    }
+    if (activeCategory === "Normal Products") {
+      return products || [];
+    }
+    // Filter by brand category (for paint products)
+    return paintProducts.filter((p) => p.brandCategory === activeCategory);
+  })();
 
   return (
     <div className="px-4 sm:px-8 md:px-16 lg:px-32 pt-24 pb-16 bg-gradient-to-b from-slate-50 via-slate-100 to-slate-200 min-h-screen">

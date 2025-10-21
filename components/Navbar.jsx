@@ -82,12 +82,14 @@ const Navbar = () => {
           ) : (
             <button
               onClick={openSignIn}
-              className="flex items-center gap-2 font-medium hover:text-indigo-300 transition"
+              className="flex items-center gap-2 font-medium hover:text-gray-400 transition"
             >
               <Image
                 src={assets.user_icon}
                 alt="user"
                 className="w-5 h-5 opacity-90"
+                style={{ filter: "brightness(0) invert(1)" }}
+
               />
               Account
             </button>
