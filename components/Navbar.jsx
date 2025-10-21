@@ -1,104 +1,146 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { assets, BagIcon, BoxIcon, CartIcon, HomeIcon } from "@/assets/assets";
 import Link from "next/link";
-import axios from "axios";
-import { ShoppingCart, Menu } from "lucide-react";
-import { FaUser } from "react-icons/fa";
-import { useClerk, UserButton, useUser } from "@clerk/nextjs";
 import { useAppContext } from "@/context/AppContext";
+import Image from "next/image";
+import { useClerk, UserButton, useUser } from "@clerk/nextjs";
 
 const Navbar = () => {
-  const { isSeller, router, user } = useAppContext();
+  const { isSeller, router } = useAppContext();
   const { openSignIn } = useClerk();
   const { isSignedIn } = useUser();
-  const [cartCount, setCartCount] = useState(0);
-
-  useEffect(() => {
-    const fetchCartCount = async () => {
-      try {
-        if (!user) return setCartCount(0);
-        const res = await axios.get(`/api/user/${user.id}/cart`);
-        setCartCount(res.data?.cartCount || 0);
-      } catch (err) {
-        console.error("Error fetching cart count:", err);
-      }
-    };
-    fetchCartCount();
-  }, [user]);
 
   return (
-    <nav className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 text-neutral-100 sticky top-0 z-50 shadow-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-12 py-4">
+    <nav className="sticky top-0 z-50 bg-[#324053]/95 backdrop-blur-md shadow-md border-b border-white/10">
+      <div className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-4 text-white">
         {/* Brand */}
-        <div
+        <h1
           onClick={() => router.push("/")}
-          className="cursor-pointer select-none"
+          className="cursor-pointer text-2xl md:text-3xl font-extrabold tracking-wide"
         >
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide">
-            Rang<span className="text-blue-300">Reza</span>
-          </h1>
-        </div>
+          <span className="text-white">Rang</span>
+          <span className="text-[#93C5FD]">Reza</span>
+        </h1>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8 font-medium">
-          <Link href="/" className="hover:text-slate-300 transition">
-            Home
-          </Link>
-          <Link href="/all-products" className="hover:text-slate-300 transition">
-            Shop
-          </Link>
-          <Link href="/about-us" className="hover:text-slate-300 transition">
-            About Us
-          </Link>
-          <Link href="/contact-us" className="hover:text-slate-300 transition">
-            Contact
-          </Link>
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          {["Home", "Shop", "About Us", "Contact"].map((item, i) => {
+            let href = "/";
+            if (item === "Shop") href = "/all-products";
+            if (item === "About Us") href = "/about-us";
+            if (item === "Contact") href = "/contact-us";
+
+            return (
+              <Link
+                key={i}
+                href={href}
+                className="relative group transition text-white/90 hover:text-white"
+              >
+                {item}
+                <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white transition-all duration-300 group-hover:w-full" />
+              </Link>
+            );
+          })}
 
           {isSeller && (
             <button
               onClick={() => router.push("/seller")}
-              className="text-xs bg-neutral-200 text-slate-900 font-semibold px-4 py-1.5 rounded-full hover:bg-neutral-300 transition"
+              className="text-xs font-semibold border border-white px-5 py-2 rounded-full hover:bg-white hover:text-[#324053] transition"
             >
               Seller Dashboard
             </button>
           )}
         </div>
 
-        {/* Right Section */}
-        <div className="flex items-center gap-5">
-          {/* Cart Icon */}
-          <button
-            onClick={() => router.push("/cart")}
-            className="relative hover:scale-110 transition-transform"
-          >
-            <ShoppingCart size={22} />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-neutral-200 text-slate-900 text-xs font-bold rounded-full px-1.5">
-                {cartCount}
-              </span>
-            )}
-          </button>
+        {/* Right side (desktop) */}
+        <div className="hidden md:flex items-center gap-5">
+          <Image
+            className="w-5 h-5 cursor-pointer opacity-80 hover:opacity-100 transition"
+            src={assets.cart_icon}
+            alt="cart"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
 
-          {/* Account / Auth */}
           {isSignedIn ? (
-            <UserButton
-              appearance={{ elements: { avatarBox: "w-8 h-8" } }}
-              afterSignOutUrl="/"
-            />
+            <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }}>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="Cart"
+                  labelIcon={<CartIcon />}
+                  onClick={() => router.push("/cart")}
+                />
+                <UserButton.Action
+                  label="My Orders"
+                  labelIcon={<BagIcon />}
+                  onClick={() => router.push("/my-orders")}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
           ) : (
             <button
               onClick={openSignIn}
-              className="flex items-center gap-2 font-medium hover:text-slate-300 transition"
+              className="flex items-center gap-2 font-medium hover:text-indigo-300 transition"
             >
-              <FaUser className="text-lg" />
+              <Image
+                src={assets.user_icon}
+                alt="user"
+                className="w-5 h-5 opacity-90"
+              />
               Account
             </button>
           )}
+        </div>
 
-          {/* Mobile Menu */}
-          <button className="md:hidden hover:text-slate-300 transition">
-            <Menu size={26} />
-          </button>
+        {/* Mobile Menu */}
+        <div className="flex items-center md:hidden gap-3">
+          {isSeller && (
+            <button
+              onClick={() => router.push("/seller")}
+              className="text-xs border border-white text-white px-3 py-1.5 rounded-full hover:bg-white hover:text-[#324053] transition"
+            >
+              Seller
+            </button>
+          )}
+
+          {isSignedIn ? (
+            <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }}>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="Home"
+                  labelIcon={<HomeIcon />}
+                  onClick={() => router.push("/")}
+                />
+                <UserButton.Action
+                  label="Products"
+                  labelIcon={<BoxIcon />}
+                  onClick={() => router.push("/all-products")}
+                />
+                <UserButton.Action
+                  label="Cart"
+                  labelIcon={<CartIcon />}
+                  onClick={() => router.push("/cart")}
+                />
+                <UserButton.Action
+                  label="My Orders"
+                  labelIcon={<BagIcon />}
+                  onClick={() => router.push("/my-orders")}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          ) : (
+            <button
+              onClick={openSignIn}
+              className="flex items-center gap-2 font-medium hover:text-indigo-300 transition"
+            >
+              <Image
+                src={assets.user_icon}
+                alt="user"
+                className="w-5 h-5 opacity-90"
+              />
+              Account
+            </button>
+          )}
         </div>
       </div>
     </nav>

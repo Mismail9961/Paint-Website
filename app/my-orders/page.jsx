@@ -73,7 +73,6 @@ const MyOrders = () => {
 
   return (
     <>
-      <Navbar />
       <div className="flex flex-col justify-between px-6 md:px-16 lg:px-32 py-6 min-h-screen">
         <div className="space-y-5">
           <h2 className="text-lg font-medium mt-6">My Orders</h2>
@@ -175,7 +174,6 @@ const MyOrders = () => {
           )}
         </div>
       </div>
-      <Footer />
     </>
   );
 };
