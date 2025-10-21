@@ -37,6 +37,11 @@ const Product = () => {
   const images = productData.images?.filter(Boolean) || [];
   const main = mainImage || images[0] || assets.placeholder;
 
+  // Get featured products based on product type
+  const featuredProducts = isPaintProduct 
+    ? paintProducts.filter((p) => p._id !== id).slice(0, 5)
+    : products.filter((p) => p._id !== id).slice(0, 5);
+
   const handleBuyNow = () => {
     if (isPaintProduct) setShowShadeModal(true);
     else {
@@ -145,20 +150,24 @@ const Product = () => {
         </div>
 
         {/* FEATURED PRODUCTS */}
-        <div className="flex flex-col items-center">
-          <div className="flex flex-col items-center mb-4 mt-16">
-            <p className="text-2xl sm:text-3xl font-semibold text-slate-800">
-              Featured <span className="text-slate-600">Products</span>
-            </p>
-            <div className="w-28 h-0.5 bg-slate-700 mt-2"></div>
-          </div>
+        {featuredProducts.length > 0 && (
+          <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mb-4 mt-16">
+              <p className="text-2xl sm:text-3xl font-semibold text-slate-800">
+                Featured <span className="text-slate-600">
+                  {isPaintProduct ? "Paint Products" : "Products"}
+                </span>
+              </p>
+              <div className="w-28 h-0.5 bg-slate-700 mt-2"></div>
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 mt-6 pb-14 w-full">
-            {products.slice(0, 5).map((p, i) => (
-              <ProductCard key={i} product={p} />
-            ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 mt-6 pb-14 w-full">
+              {featuredProducts.map((p, i) => (
+                <ProductCard key={i} product={p} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* SHADE MODAL */}
