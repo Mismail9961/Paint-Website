@@ -55,12 +55,14 @@ const Navbar = () => {
 
         {/* Right side (desktop) */}
         <div className="hidden md:flex items-center gap-5">
+          <a href="/cart">
           <Image
             className="w-5 h-5 cursor-pointer opacity-80 hover:opacity-100 transition"
             src={assets.cart_icon}
             alt="cart"
             style={{ filter: "brightness(0) invert(1)" }}
           />
+          </a>
 
           {isSignedIn ? (
             <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }}>
