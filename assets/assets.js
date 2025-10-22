@@ -53,8 +53,10 @@ import GobisGoldUndercoat from "./Gobis-Gold-Undercoat.png";
 import GobisGoldWallEmulsion from "./Gobis-GOld-Wall-Emulsion.png";
 import GobisSilksheenEmulsion from "./Gobis-Silksheen-Emulsion.png";
 import GobisWeatherProtector from "./Gobis-Weather-Protector.png";
+import HomeImage from "./HomeAbout.jpg"
 
 export const assets = {
+  HomeImage,
   logo,
   search_icon,
   user_icon,

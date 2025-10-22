@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import TopBar from "@/components/TopBar";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
           <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
 
           <AppContextProvider>
+            <TopBar/>
             {/* Navbar stays on top */}
             <Navbar />
 

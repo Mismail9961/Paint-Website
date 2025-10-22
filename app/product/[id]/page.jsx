@@ -202,7 +202,9 @@ const Product = () => {
                 </div>
               ))}
             </div>
-
+            <p className="text-slate-500 text-center text-sm sm:text-lg mt-2">
+              Enter the right number or else your order will be rejected
+            </p>
             <input
               type="text"
               placeholder="Enter Shade Number"
@@ -210,7 +212,6 @@ const Product = () => {
               onChange={(e) => setShadeNumber(e.target.value)}
               className="w-full sm:w-1/2 border px-4 py-3 rounded-lg mt-10 outline-none focus:ring-2 focus:ring-slate-600 text-center text-lg text-slate-800"
             />
-
             <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-8 mb-6 w-full sm:w-auto">
               <button
                 onClick={() => setShowShadeModal(false)}
