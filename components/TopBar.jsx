@@ -15,12 +15,12 @@ const TopBar = () => {
       
       {/* Left Info */}
       <div className="flex flex-wrap items-center gap-6 font-medium">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
           <div className="p-1.5 bg-[#324053]/10 rounded-full">
             <FaPhone className="text-[#324053]" />
           </div>
           <a
-            href="tel:+923313649161"
+            href="mailto:info@karachipaint.com"
             className="hover:text-[#324053]/70 transition-colors duration-200"
           >
             +92 331 3649161
@@ -44,7 +44,7 @@ const TopBar = () => {
       <div className="flex items-center gap-3">
         <a
           href="#"
-          className="w-7 h-7 flex items-center justify-center rounded-full bg-[#324053] hover:bg-[#4CAF50] text-white transition-all duration-200 shadow-sm"
+          className="w-7 h-7 flex items-center justify-center rounded-full bg-[#324053] hover:bg-[#4c7faf] text-white transition-all duration-200 shadow-sm"
         >
           <FaFacebookF className="text-xs" />
         </a>
