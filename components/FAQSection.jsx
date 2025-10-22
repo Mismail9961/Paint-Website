@@ -5,26 +5,32 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    question: "What services does your digital marketing agency offer?",
+    question: "What brands of paint do you offer?",
     answer:
-      "We offer SEO, social media management, web design, content marketing, and advertising strategy tailored to help your business grow online.",
+      "We proudly offer top-quality paints from leading brands like ICI, Gobi’s, Diamond, Dulux, and more — ensuring lasting finish and vibrant color for every space.",
   },
   {
-    question: "How can digital marketing help my business grow?",
+    question: "Do you provide paint color consultation or recommendations?",
     answer:
-      "By improving your online visibility, generating quality leads, and connecting with your audience through data-driven campaigns.",
+      "Yes, our experts can help you choose the right colors and finishes based on your space, lighting, and personal style preferences.",
   },
   {
-    question: "How do you measure the success of a digital marketing campaign?",
+    question: "Can I order paint online and get it delivered?",
     answer:
-      "We track KPIs like engagement, leads, conversions, ROI, and traffic analytics to evaluate each campaign’s effectiveness.",
+      "Absolutely! You can place your order directly on our website, and we’ll deliver your selected paint products safely to your doorstep.",
   },
   {
-    question: "Can you manage our social media accounts?",
+    question: "Do you sell painting tools and accessories too?",
     answer:
-      "Yes, we create, schedule, and manage posts across multiple platforms while maintaining your brand voice consistently.",
+      "Yes, we offer a wide range of painting supplies — including brushes, rollers, primers, and coatings — to make your painting project easy and professional.",
+  },
+  {
+    question: "Are your paints suitable for both interior and exterior use?",
+    answer:
+      "Yes, we stock paints for both interior and exterior applications, designed to provide durability, weather resistance, and a beautiful finish.",
   },
 ];
+
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);

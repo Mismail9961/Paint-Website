@@ -54,7 +54,7 @@ export default function PaintProductsSection() {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="absolute bottom-[-20px] left-[-20px] bg-[#3C4A5C] text-white px-6 py-3 rounded-md shadow-lg"
             >
-              <p className="text-4xl font-bold">76</p>
+              <p className="text-4xl font-bold">20</p>
               <p className="text-sm opacity-90">Years of experience</p>
             </motion.div>
           </div>
@@ -96,6 +96,7 @@ export default function PaintProductsSection() {
           </ul>
 
           <div className="flex items-center gap-6">
+            <a href="/about-us">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -103,6 +104,7 @@ export default function PaintProductsSection() {
             >
               Discover More
             </motion.button>
+            </a>
 
             <div className="flex items-center gap-2">
               <Users className="text-[#3C4A5C] w-6 h-6" />
