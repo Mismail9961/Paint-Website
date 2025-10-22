@@ -10,16 +10,21 @@ import {
 
 const TopBar = () => {
   return (
-    <div className="bg-[#E4E8EE] text-[#324053] text-sm py-2.5 px-6 md:px-16 lg:px-32 flex flex-col md:flex-row items-center justify-between gap-2 border-b border-[#d3d8df] shadow-sm">
+    // 👇 Hidden on small screens, visible from md and above
+    <div className="hidden md:flex bg-[#E4E8EE] text-[#324053] text-sm py-2.5 px-6 md:px-16 lg:px-32 items-center justify-between gap-2 border-b border-[#d3d8df] shadow-sm">
+      
       {/* Left Info */}
       <div className="flex flex-wrap items-center gap-6 font-medium">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-[#4CAF50]/20 rounded-full">
-            <FaPhone className="text-[#4CAF50]" />
+          <div className="p-1.5 bg-[#324053]/10 rounded-full">
+            <FaPhone className="text-[#324053]" />
           </div>
-          <span className="hover:text-[#4CAF50] transition-colors duration-200">
+          <a
+            href="tel:+923313649161"
+            className="hover:text-[#324053]/70 transition-colors duration-200"
+          >
             +92 331 3649161
-          </span>
+          </a>
         </div>
 
         <div className="flex items-center gap-2">
@@ -36,7 +41,7 @@ const TopBar = () => {
       </div>
 
       {/* Right Social Links */}
-      <div className="flex items-center gap-3 mt-1 md:mt-0">
+      <div className="flex items-center gap-3">
         <a
           href="#"
           className="w-7 h-7 flex items-center justify-center rounded-full bg-[#324053] hover:bg-[#4CAF50] text-white transition-all duration-200 shadow-sm"

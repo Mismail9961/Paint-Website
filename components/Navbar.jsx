@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton, useUser } from "@clerk/nextjs";
+import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 const Navbar = () => {
   const { isSeller, router } = useAppContext();
@@ -56,12 +57,12 @@ const Navbar = () => {
         {/* Right side (desktop) */}
         <div className="hidden md:flex items-center gap-5">
           <a href="/cart">
-          <Image
-            className="w-5 h-5 cursor-pointer opacity-80 hover:opacity-100 transition"
-            src={assets.cart_icon}
-            alt="cart"
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
+            <Image
+              className="w-5 h-5 cursor-pointer opacity-80 hover:opacity-100 transition"
+              src={assets.cart_icon}
+              alt="cart"
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
           </a>
 
           {isSignedIn ? (
@@ -89,7 +90,6 @@ const Navbar = () => {
                 alt="user"
                 className="w-5 h-5 opacity-90"
                 style={{ filter: "brightness(0) invert(1)" }}
-
               />
               Account
             </button>
@@ -98,6 +98,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div className="flex items-center md:hidden gap-3">
+          {/* Seller Button (if seller) */}
           {isSeller && (
             <button
               onClick={() => router.push("/seller")}
@@ -107,6 +108,7 @@ const Navbar = () => {
             </button>
           )}
 
+          {/* Auth Section */}
           {isSignedIn ? (
             <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }}>
               <UserButton.MenuItems>
@@ -141,10 +143,33 @@ const Navbar = () => {
                 src={assets.user_icon}
                 alt="user"
                 className="w-5 h-5 opacity-90"
+                style={{ filter: "brightness(0) invert(1)" }}
               />
               Account
             </button>
           )}
+
+          {/* Social Icons */}
+          <div className="flex items-center gap-2">
+            <a
+              href="#"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#324053] hover:bg-[#4267B2] text-white transition-all duration-200 shadow-sm"
+            >
+              <FaFacebookF className="text-sm" />
+            </a>
+            <a
+              href="#"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#324053] hover:bg-[#E4405F] text-white transition-all duration-200 shadow-sm"
+            >
+              <FaInstagram className="text-sm" />
+            </a>
+            <a
+              href="#"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#324053] hover:bg-[#25D366] text-white transition-all duration-200 shadow-sm"
+            >
+              <FaWhatsapp className="text-sm" />
+            </a>
+          </div>
         </div>
       </div>
     </nav>
