@@ -6,6 +6,7 @@ import { assets } from "@/assets/assets";
 import ProductCard from "@/components/ProductCard";
 import Loading from "@/components/Loading";
 import { useAppContext } from "@/context/AppContext";
+import toast from "react-hot-toast";
 
 const Product = () => {
   const { id } = useParams();
@@ -52,7 +53,7 @@ const Product = () => {
 
   const handleConfirmShade = () => {
     if (!shadeNumber.trim()) {
-      alert("Please enter a shade number.");
+      toast.error("Please enter a shade number.");
       return;
     }
     addToCart(productData._id, { shadeNumber });

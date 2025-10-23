@@ -145,7 +145,7 @@ export const AppContextProvider = ({ children }) => {
       return updated;
     });
 
-    toast.success("🛒 Added to cart!");
+    toast.success("Added to cart!");
   };
 
   // ✅ Remove item

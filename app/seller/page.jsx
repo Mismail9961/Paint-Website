@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { assets } from "@/assets/assets"; // ensure upload_area exists here
+import toast from "react-hot-toast";
 
 const AddProduct = () => {
   const [image, setImage] = useState(null);
@@ -42,7 +43,7 @@ const AddProduct = () => {
         },
       });
 
-      setMessage("✅ Product added successfully!");
+      toast("Product added successfully!");
       setTitle("");
       setDescription("");
       setQuantity("");
@@ -180,17 +181,6 @@ const AddProduct = () => {
         >
           {loading ? "Uploading..." : "ADD PRODUCT"}
         </button>
-
-        {/* Message */}
-        {message && (
-          <p
-            className={`mt-3 text-sm ${
-              message.startsWith("✅") ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {message}
-          </p>
-        )}
       </form>
     </div>
   );
