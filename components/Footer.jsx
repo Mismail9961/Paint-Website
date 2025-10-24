@@ -11,7 +11,7 @@ const Footer = () => {
         {/* Logo & Description */}
         <div className="w-full md:w-2/5 text-center md:text-left">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide text-neutral-100">
-            Rang<span className="text-blue-300">Reza</span>
+          Quality<span className="text-blue-300"> Paint Palace</span>
           </h1>
           <p className="mt-6 text-sm leading-relaxed text-neutral-300 max-w-sm mx-auto md:mx-0">
             We bring premium paint brands like <b>Gobi’s</b>, <b>ICI</b>, and{" "}
@@ -70,7 +70,7 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 text-neutral-200 py-4">
         <p className="text-center text-xs sm:text-sm tracking-wide px-2">
-          © {new Date().getFullYear()} RangReza.pk — All Rights Reserved.
+          © {new Date().getFullYear()} Quality Paint Palace.pk — All Rights Reserved.
         </p>
       </div>
     </footer>

@@ -20,8 +20,8 @@ const Navbar = () => {
           onClick={() => router.push("/")}
           className="cursor-pointer text-2xl md:text-3xl font-extrabold tracking-wide"
         >
-          <span className="text-white">Rang</span>
-          <span className="text-[#93C5FD]">Reza</span>
+          <span className="text-white">Quality Paint</span>
+          <span className="text-[#93C5FD]"> Palace</span>
         </h1>
 
         {/* Desktop Links */}
