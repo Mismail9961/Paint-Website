@@ -1,0 +1,9 @@
+{
+    "rewrites": [
+      {
+        "source": "/api/clerk/(.*)",
+        "destination": "https://clerk.example.com/$1"
+      }
+    ]
+  }
+  
