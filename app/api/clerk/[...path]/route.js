@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
-  const url = `https://clerk.example.com/${params.path.join("/")}`;
+  const url = `https://clerk.qualitypaintpalace.store/${params.path.join("/")}`;
   const res = await fetch(url, {
     headers: req.headers,
   });
@@ -11,7 +11,7 @@ export async function GET(req, { params }) {
 }
 
 export async function POST(req, { params }) {
-  const url = `https://clerk.example.com/${params.path.join("/")}`;
+  const url = `https://clerk.qualitypaintpalace.store/${params.path.join("/")}`;
   const body = await req.text();
   const res = await fetch(url, {
     method: "POST",
