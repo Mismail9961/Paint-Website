@@ -2,7 +2,7 @@
     "rewrites": [
       {
         "source": "/api/clerk/(.*)",
-        "destination": "https://clerk.example.com/$1"
+        "destination": "https://clerk.qualitypaintpalace.store/$1"
       }
     ]
   }
