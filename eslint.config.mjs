@@ -1,8 +1,6 @@
 import js from "@eslint/js";
 import nextPlugin from "@next/eslint-plugin-next";
 
-const isProd = process.env.NODE_ENV === "production";
-
 export default [
   {
     ignores: ["node_modules", ".next", "dist"],
@@ -16,6 +14,7 @@ export default [
     },
     rules: {
       ...nextPlugin.configs["core-web-vitals"].rules,
+      "no-console": "off", // ✅ Disable console rule globally
     },
   },
 
@@ -33,11 +32,6 @@ export default [
         fetch: "readonly",
         setTimeout: "readonly",
       },
-    },
-
-    rules: {
-      // ✅ Automatically disable console in production builds
-      "no-console": isProd ? "error" : "off",
     },
   },
 ];
