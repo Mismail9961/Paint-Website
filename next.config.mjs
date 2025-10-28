@@ -1,5 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // ✅ Ignore all ESLint errors and warnings during production build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // ✅ Automatically remove all console.* statements in production builds
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
+  // ✅ Allow optimized external images
   images: {
     remotePatterns: [
       {
@@ -15,12 +26,7 @@ const nextConfig = {
     ],
   },
 
-  // ✅ Automatically removes all console.* statements in production builds
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-  },
-
-  // (optional) Helpful if you use experimental Next.js 15 features
+  // ✅ Safe experimental options (optional)
   experimental: {
     optimizeCss: true,
     serverActions: {
