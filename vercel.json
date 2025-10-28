@@ -1,9 +1,0 @@
-{
-    "rewrites": [
-      {
-        "source": "/api/clerk/(.*)",
-        "destination": "https://clerk.qualitypaintpalace.store/$1"
-      }
-    ]
-  }
-  
