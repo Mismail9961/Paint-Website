@@ -3,7 +3,7 @@ import User from "@/models/User";
 import { NextResponse } from "next/server";
 import connectDB from "@/config/db";
 
-export async function GET(request) {
+export async function GET() {
   try {
     const { userId } = await auth();
 
@@ -12,37 +12,41 @@ export async function GET(request) {
     }
 
     await connectDB();
-    let user = await User.findById(userId);
 
+    // Try to find by Clerk ID (stored in clerkId field)
+    let user = await User.findOne({ clerkId: userId });
+
+    // If not found, create or upsert the user
     if (!user) {
       console.log("Fetching current user from Clerk for:", userId);
 
-      try {
-        // Get current user directly
-        const clerkUser = await currentUser();
-
-        if (!clerkUser) {
-          throw new Error("No current user found");
-        }
-
-        user = new User({
-          _id: userId,
-          name:
-            `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() ||
-            "Unnamed User",
-          email: clerkUser.emailAddresses?.[0]?.emailAddress || "",
-          imageUrl: clerkUser.imageUrl || "",
-        });
-
-        await user.save();
-        console.log("Real user data created from currentUser:", userId);
-      } catch (clerkError) {
-        console.error("currentUser error:", clerkError.message);
-        return NextResponse.json({
-          success: false,
-          message: `Could not get current user: ${clerkError.message}`,
-        });
+      const clerkUser = await currentUser();
+      if (!clerkUser) {
+        throw new Error("No current user found");
       }
+
+      const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+      if (!email) {
+        throw new Error("Clerk user missing email address");
+      }
+
+      // Use findOneAndUpdate with upsert to avoid duplicate key errors
+      user = await User.findOneAndUpdate(
+        { email }, // find by email
+        {
+          $setOnInsert: {
+            clerkId: userId,
+            name:
+              `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() ||
+              "Unnamed User",
+            email,
+            imageUrl: clerkUser.imageUrl || "",
+          },
+        },
+        { upsert: true, new: true }
+      );
+
+      console.log("User created or updated:", email);
     }
 
     return NextResponse.json({ success: true, user });
