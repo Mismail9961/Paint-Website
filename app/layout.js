@@ -1,8 +1,6 @@
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
-import { ClerkProvider } from "@clerk/nextjs";
-import ClientLayout from "@/components/ClientLayout";
+
 
 const outfit = Outfit({
   subsets: ["latin"],

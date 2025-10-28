@@ -1,14 +1,42 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
+import nextPlugin from "@next/eslint-plugin-next";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export default [
+  {
+    ignores: ["node_modules", ".next", "dist"],
+  },
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+  js.configs.recommended,
 
-const eslintConfig = [...compat.extends("next/core-web-vitals")];
+  {
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs["core-web-vitals"].rules,
+    },
+  },
 
-export default eslintConfig;
+  {
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: { jsx: true },
+      },
+      globals: {
+        console: "readonly",
+        process: "readonly",
+        Buffer: "readonly",
+        fetch: "readonly",
+        setTimeout: "readonly",
+      },
+      
+    },
+
+    rules: {
+      // Remove all console logs only in production builds
+      "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
+    },
+  },
+];

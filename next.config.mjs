@@ -14,6 +14,19 @@ const nextConfig = {
       },
     ],
   },
+
+  // ✅ Automatically removes all console.* statements in production builds
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
+  // (optional) Helpful if you use experimental Next.js 15 features
+  experimental: {
+    optimizeCss: true,
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+  },
 };
 
 export default nextConfig;
