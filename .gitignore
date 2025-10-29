@@ -33,6 +33,7 @@ yarn-error.log*
 # env files (always ignore for security)
 .env
 .env.local
+.env.production
 
 # vercel
 .vercel
