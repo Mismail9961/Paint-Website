@@ -54,8 +54,16 @@ import GobisGoldWallEmulsion from "./Gobis-GOld-Wall-Emulsion.png";
 import GobisSilksheenEmulsion from "./Gobis-Silksheen-Emulsion.png";
 import GobisWeatherProtector from "./Gobis-Weather-Protector.png";
 import HomeImage from "./HomeAbout.jpg"
+import Banner1 from "./3609a448502f6700bce0a92f0197aa14.jpg";
+import Banner2 from "./3a4bbaaa6433fbf9498ccb631d7a3fc5.jpg";
+import Banner3 from './4943b9eebe40f35c3a094e9f87a91a91.jpg'
+import Banner4 from "./8cad5591b6ae94d386ff12c94947a775.jpg"
 
 export const assets = {
+  Banner1,
+  Banner2,
+  Banner3,
+  Banner4,
   HomeImage,
   logo,
   search_icon,

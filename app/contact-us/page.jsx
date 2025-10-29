@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mail, Phone, MapPin, XCircle, CheckCircle } from "lucide-react";
+import { Mail, Phone, MapPin, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
@@ -15,8 +15,6 @@ export default function ContactUs() {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(null);
-  const [serverError, setServerError] = useState(null);
 
   function validate() {
     const e = {};
@@ -33,8 +31,6 @@ export default function ContactUs() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setSuccess(null);
-    setServerError(null);
     if (!validate()) return;
     setSubmitting(true);
 
@@ -44,74 +40,67 @@ export default function ContactUs() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data?.message || "Failed to send message.");
 
-      toast("Thanks! Your message was sent. We'll reply within 24 hours.");
+      toast.success("Thanks! Your message was sent. We'll reply within 24 hours.");
       setForm({ name: "", email: "", orderNumber: "", subject: "", message: "" });
       setErrors({});
     } catch (err) {
-      setServerError(err?.message || "Something went wrong.");
+      toast.error(err?.message || "Something went wrong.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-12 bg-white text-[#2F3C50]">
+    <main className="  w-full mx-auto px-4 sm:px-6 md:px-10 py-12 bg-[#03045E] text-white min-h-screen">
       <motion.header
-        initial={{ opacity: 0, y: -8 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="mb-8"
+        transition={{ duration: 0.5 }}
+        className="mb-8 text-center sm:text-left"
       >
-        <h1 className="text-3xl md:text-4xl font-semibold">Contact Us</h1>
-        <p className="mt-2 text-[#2F3C50]/80">
-          Need help with an order, returns or product details? We&apos;re here for you.
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#FFD60A]">
+          Contact Us
+        </h1>
+        <p className="mt-2 text-[#00B4D8]/90 text-sm sm:text-base">
+          Need help with an order, returns, or product details? We’re here for you.
         </p>
       </motion.header>
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Contact Info */}
         <aside className="space-y-6">
-          <div className="rounded-2xl p-6 shadow-sm border bg-[#2F3C50] text-white">
-            <h3 className="text-lg font-medium">Customer Support</h3>
+          <div className="rounded-2xl p-6 shadow-lg border border-[#FFD60A]/30 bg-[#00B4D8]/20">
+            <h3 className="text-lg font-semibold text-[#FFD60A]">Customer Support</h3>
             <p className="mt-2 text-sm text-white/80">Mon - Fri: 9:00 — 18:00 (PKT)</p>
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex items-start gap-3">
-                <Phone className="w-5 h-5 shrink-0" />
+                <Phone className="w-5 h-5 shrink-0 text-[#FFD60A]" />
                 <div>
                   <dt className="font-medium">Phone</dt>
                   <dd className="text-white/80">+92 3102437201</dd>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Mail className="w-5 h-5 shrink-0" />
+                <Mail className="w-5 h-5 shrink-0 text-[#FFD60A]" />
                 <div>
                   <dt className="font-medium">Email</dt>
                   <dd className="text-white/80">sheikhmuhammadismail79@gmail.com</dd>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 shrink-0" />
+                <MapPin className="w-5 h-5 shrink-0 text-[#FFD60A]" />
                 <div>
                   <dt className="font-medium">Address</dt>
                   <dd className="text-white/80">Gulberg, Karachi, Pakistan</dd>
                 </div>
               </div>
             </dl>
-            <div className="mt-6 flex gap-3">
-              <a href="/faq" className="text-sm underline">
-                FAQ
-              </a>
-              <a href="/returns" className="text-sm underline">
-                Returns & Refunds
-              </a>
-            </div>
           </div>
 
-          <div className="rounded-2xl overflow-hidden border">
+          <div className="rounded-2xl overflow-hidden border border-[#FFD60A]/20">
             <iframe
               title="Store location"
               className="w-full h-52"
@@ -120,116 +109,78 @@ export default function ContactUs() {
             />
           </div>
 
-          <div className="rounded-2xl p-4 bg-[#2F3C50]/10 border border-[#2F3C50]">
-            <h4 className="text-sm font-medium">Pro tip</h4>
-            <p className="text-sm mt-2">
-              Include your order number if your message is about an existing order — it helps us
-              resolve things faster.
+          <div className="rounded-2xl p-4 bg-[#FFD60A]/10 border border-[#FFD60A]/30">
+            <h4 className="text-sm font-semibold text-[#FFD60A]">Pro tip</h4>
+            <p className="text-sm mt-2 text-white/80">
+              Include your order number if your message is about an existing order — it helps us resolve faster.
             </p>
           </div>
         </aside>
 
         {/* Contact Form */}
-        <form
+        <motion.form
           onSubmit={handleSubmit}
-          className="lg:col-span-2 rounded-2xl border p-6 bg-white shadow-sm"
-          aria-label="Contact form"
+          className="lg:col-span-2 rounded-2xl border border-[#FFD60A]/30 p-6 bg-[#03045E]/90 shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium">Full name</label>
-              <input
-                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-                  errors.name ? "border-red-400 focus:ring-red-200" : "border-[#2F3C50]"
-                }`}
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Your full name"
-              />
-              {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Email</label>
-              <input
-                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-                  errors.email ? "border-red-400 focus:ring-red-200" : "border-[#2F3C50]"
-                }`}
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@domain.com"
-                type="email"
-              />
-              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Order number (optional)</label>
-              <input
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm border-[#2F3C50]"
-                value={form.orderNumber}
-                onChange={(e) => setForm({ ...form, orderNumber: e.target.value })}
-                placeholder="e.g. #123456"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Subject</label>
-              <input
-                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-                  errors.subject ? "border-red-400 focus:ring-red-200" : "border-[#2F3C50]"
-                }`}
-                value={form.subject}
-                onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                placeholder="What is this about?"
-              />
-              {errors.subject && <p className="mt-1 text-xs text-red-600">{errors.subject}</p>}
-            </div>
+            {["name", "email", "orderNumber", "subject"].map((field, idx) => (
+              <div key={idx}>
+                <label className="block text-sm font-medium capitalize text-[#FFD60A]">
+                  {field === "orderNumber" ? "Order number (optional)" : field}
+                </label>
+                <input
+                  type={field === "email" ? "email" : "text"}
+                  placeholder={field === "email" ? "you@domain.com" : `Enter your ${field}`}
+                  value={form[field]}
+                  onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                  className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                    errors[field] ? "border-red-400 focus:ring-red-200" : "border-[#FFD60A]/70 focus:ring-[#00B4D8]"
+                  } bg-[#03045E]/70 text-white placeholder-white/60`}
+                />
+                {errors[field] && <p className="mt-1 text-xs text-red-400">{errors[field]}</p>}
+              </div>
+            ))}
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium">Message</label>
+            <label className="block text-sm font-medium text-[#FFD60A]">Message</label>
             <textarea
-              className={`mt-1 block w-full rounded-md border px-3 py-2 min-h-[140px] shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-                errors.message ? "border-red-400 focus:ring-red-200" : "border-[#2F3C50]"
-              }`}
+              placeholder="Type your message here..."
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
-              placeholder="Tell us what's happening and what you'd like us to do — include relevant details."
+              className={`mt-1 block w-full rounded-md border px-3 py-2 min-h-[140px] shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                errors.message ? "border-red-400 focus:ring-red-200" : "border-[#FFD60A]/70 focus:ring-[#00B4D8]"
+              } bg-[#03045E]/70 text-white placeholder-white/60`}
             />
-            {errors.message && <p className="mt-1 text-xs text-red-600">{errors.message}</p>}
+            {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
           </div>
 
-          <div className="mt-6 flex items-center gap-4">
+          <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#2F3C50] text-white px-4 py-2 text-sm font-medium shadow hover:opacity-95 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#FFD60A] text-[#03045E] px-4 py-2 font-medium shadow hover:opacity-95 disabled:opacity-60 transition-all"
             >
-              {submitting ? "Sending..." : "Send message"}
+              {submitting ? "Sending..." : "Send Message"}
             </button>
-
             <button
               type="button"
-              onClick={() => {
-                setForm({ name: "", email: "", orderNumber: "", subject: "", message: "" });
-                setErrors({});
-                setSuccess(null);
-                setServerError(null);
-              }}
-              className="text-sm underline"
+              onClick={() => setForm({ name: "", email: "", orderNumber: "", subject: "", message: "" })}
+              className="text-sm underline text-[#00B4D8]"
             >
               Reset
             </button>
 
-            <div className="ml-auto text-sm text-[#2F3C50]/80">
-              <span className="inline-flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                Response time: <strong className="ml-1">within 24 hours</strong>
-              </span>
+            <div className="ml-auto mt-2 sm:mt-0 text-sm flex items-center gap-2 text-[#00B4D8]">
+              <CheckCircle className="w-4 h-4" />
+              Response time: <strong className="ml-1">within 24 hours</strong>
             </div>
           </div>
-        </form>
+        </motion.form>
       </section>
     </main>
   );
