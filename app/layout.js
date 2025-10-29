@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       appearance={{
         layout: { socialButtonsVariant: "iconButton" },
-        variables: { colorPrimary: "#c2b89b" },
+        variables: { colorPrimary: "##02317C" },
       }}
     >
       <html lang="en">

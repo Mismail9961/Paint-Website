@@ -63,7 +63,7 @@ const Product = () => {
 
   return (
     <>
-      <div className="px-3 sm:px-6 md:px-12 lg:px-20 pt-14 space-y-10 bg-[#03045E]/5 min-h-screen">
+      <div className="px-3 sm:px-6 md:px-12 mb-4 lg:px-20 pt-14 space-y-10 bg-[#03045E]/5 min-h-screen">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
           {/* LEFT IMAGES */}
           <div className="px-2 sm:px-4 md:px-8">
