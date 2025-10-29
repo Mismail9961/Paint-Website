@@ -1,6 +1,13 @@
 "use client";
 import React from "react";
-import { assets, BagIcon, BoxIcon, CartIcon, HomeIcon } from "@/assets/assets";
+import {
+  assets,
+  star_icon,
+  BagIcon,
+  BoxIcon,
+  CartIcon,
+  HomeIcon,
+} from "@/assets/assets";
 import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
@@ -68,8 +75,7 @@ const Navbar = () => {
             <UserButton
               appearance={{
                 elements: {
-                  avatarBox:
-                    "w-8 h-8 border-2 border-[#00B4D8] rounded-full",
+                  avatarBox: "w-8 h-8 border-2 border-[#00B4D8] rounded-full",
                 },
               }}
             >
@@ -140,6 +146,16 @@ const Navbar = () => {
                   label="Home"
                   labelIcon={<HomeIcon />}
                   onClick={() => router.push("/")}
+                />
+                <UserButton.Action
+                  label="About Us"
+                  labelIcon={<star_icon />}
+                  onClick={() => router.push("/about-us")}
+                />
+                <UserButton.Action
+                  label="Contact Us"
+                  labelIcon={<star_icon />}
+                  onClick={() => router.push("/contact-us")}
                 />
                 <UserButton.Action
                   label="Products"
