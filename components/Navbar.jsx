@@ -129,6 +129,63 @@ const Navbar = () => {
             />
           </button>
 
+          {/* 👤 User Avatar beside Cart */}
+          {isSignedIn ? (
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox:
+                    "w-7 h-7 sm:w-8 sm:h-8 border border-[#94D2BD] rounded-full",
+                },
+              }}
+            >
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="Home"
+                  labelIcon={<HomeIcon />}
+                  onClick={() => router.push("/")}
+                />
+                <UserButton.Action
+                  label="About Us"
+                  labelIcon={<star_icon />}
+                  onClick={() => router.push("/about-us")}
+                />
+                <UserButton.Action
+                  label="Contact Us"
+                  labelIcon={<star_icon />}
+                  onClick={() => router.push("/contact-us")}
+                />
+                <UserButton.Action
+                  label="Products"
+                  labelIcon={<BoxIcon />}
+                  onClick={() => router.push("/all-products")}
+                />
+                <UserButton.Action
+                  label="Cart"
+                  labelIcon={<CartIcon />}
+                  onClick={() => router.push("/cart")}
+                />
+                <UserButton.Action
+                  label="My Orders"
+                  labelIcon={<BagIcon />}
+                  onClick={() => router.push("/my-orders")}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          ) : (
+            <button
+              onClick={openSignIn}
+              className="flex items-center gap-1.5 font-medium hover:text-[#94D2BD] transition"
+            >
+              <Image
+                src={assets.user_icon}
+                alt="user"
+                className="w-4 h-4 sm:w-5 sm:h-5 opacity-90"
+                style={{ filter: "brightness(0) invert(1)" }}
+              />
+            </button>
+          )}
+
           {/* Toggle Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
@@ -185,18 +242,20 @@ const Navbar = () => {
             >
               Shop
             </Link>
-
-            {isSeller && (
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  router.push("/seller");
-                }}
-                className="text-xs border border-[#94D2BD] text-[#94D2BD] px-3 py-1 rounded-full hover:bg-[#94D2BD] hover:text-[#0A9396] transition"
-              >
-                Seller Dashboard
-              </button>
-            )}
+            <Link
+              href="/cart"
+              onClick={() => setMenuOpen(false)}
+              className="hover:text-[#94D2BD] transition"
+            >
+              Cart
+            </Link>
+            <Link
+              href="/my-orders"
+              onClick={() => setMenuOpen(false)}
+              className="hover:text-[#94D2BD] transition"
+            >
+              My Orders
+            </Link>
 
             {!isSignedIn && (
               <button
