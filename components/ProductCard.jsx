@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
@@ -10,9 +11,7 @@ const ProductCard = ({ product }) => {
   if (!product) return null;
 
   const productImage =
-    product.image?.[0] ||
-    product.images?.[0] ||
-    "/placeholder.png";
+    product.image?.[0] || product.images?.[0] || "/placeholder.png";
 
   const productName = product.name || product.title || "Unnamed Product";
   const productDescription = product.description || "No description available";
@@ -26,33 +25,38 @@ const ProductCard = ({ product }) => {
       }}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
-      className="flex flex-col items-start gap-1 max-w-[200px] w-full cursor-pointer"
+      className="flex flex-col items-start gap-2 max-w-[220px] sm:max-w-[240px] w-full cursor-pointer p-3 rounded-2xl 
+                 bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-[#94D2BD]/40"
     >
       {/* Product Image */}
-      <div className="cursor-pointer group relative bg-[#03045E]/10 rounded-lg w-full h-52 flex items-center justify-center overflow-hidden shadow-md">
+      <div className="relative bg-[#94D2BD]/20 rounded-xl w-full h-48 sm:h-52 flex items-center justify-center overflow-hidden">
         <Image
           src={productImage}
           alt={productName}
-          className="group-hover:scale-105 transition-transform duration-300 object-cover w-4/5 h-4/5 md:w-full md:h-full"
+          className="object-cover w-4/5 h-4/5 sm:w-full sm:h-full rounded-lg group-hover:scale-105 transition-transform duration-300"
           width={800}
           height={800}
         />
-        <button className="absolute top-2 right-2 bg-[#FFD60A] p-2 rounded-full shadow-md hover:bg-[#00B4D8] transition">
-          <Image className="h-3 w-3" src={assets.heart_icon} alt="heart_icon" />
+        <button className="absolute top-2 right-2 bg-[#0A9396] p-2 rounded-full shadow-md hover:bg-[#94D2BD] transition">
+          <Image
+            className="h-3 w-3 invert"
+            src={assets.heart_icon}
+            alt="heart_icon"
+          />
         </button>
       </div>
 
       {/* Product Info */}
-      <p className="md:text-base font-medium pt-2 w-full truncate text-[#03045E]">
+      <p className="text-sm sm:text-base font-semibold pt-2 w-full truncate text-[#0A9396]">
         {productName}
       </p>
-      <p className="w-full text-xs text-[#00B4D8]/80 max-sm:hidden truncate">
+      <p className="w-full text-xs text-black/70 max-sm:line-clamp-2 truncate">
         {productDescription}
       </p>
 
       {/* Rating */}
-      <div className="flex items-center gap-2">
-        <p className="text-xs text-[#03045E]">4.5</p>
+      <div className="flex items-center gap-2 mt-1">
+        <p className="text-xs text-[#0A9396]">4.5</p>
         <div className="flex items-center gap-0.5">
           {Array.from({ length: 5 }).map((_, index) => (
             <Image
@@ -70,15 +74,20 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* Price + Buy Now */}
-      <div className="flex items-end justify-between w-full mt-1">
-        <p className="text-base font-medium text-[#03045E]">
+      <div className="flex items-center justify-between w-full mt-2">
+        <p className="text-base font-semibold text-[#0A9396]">
           {currency}
           {productPrice}
         </p>
         <motion.button
-          whileHover={{ scale: 1.05, backgroundColor: "#FFD60A", color: "#03045E" }}
+          whileHover={{
+            scale: 1.05,
+            backgroundColor: "#0A9396",
+            color: "white",
+          }}
           whileTap={{ scale: 0.95 }}
-          className="max-sm:hidden px-4 py-1.5 text-[#00B4D8] border border-[#00B4D8] rounded-full text-xs hover:bg-[#03045E] hover:text-[#FFD60A] transition"
+          className="px-3 py-1 text-xs sm:text-sm text-[#0A9396] border border-[#0A9396] 
+                     rounded-full hover:bg-[#94D2BD] hover:text-black transition font-medium"
         >
           Buy now
         </motion.button>

@@ -4,19 +4,17 @@ import { motion } from "framer-motion";
 
 const NewsLetter = () => {
   return (
-    <section className="relative flex flex-col items-center justify-center text-center my-20 rounded-3xl overflow-hidden py-40">
-
-
+    <section className="relative flex flex-col items-center justify-center text-center my-20 sm:my-28 rounded-3xl overflow-hidden py-24 px-6 sm:px-10">
       {/* Heading */}
       <motion.h1
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
-        className="md:text-4xl text-2xl font-extrabold z-10 text-white px-4 leading-snug drop-shadow-lg"
+        className="md:text-4xl text-2xl font-extrabold z-10 text-[#0A9396] leading-snug"
       >
-        Subscribe & Get{" "}
-        <span className="text-[#FFD60A]">20% Off</span> Your First Paint Order
+        Stay Inspired with{" "}
+        <span className="text-black">Quality Paint Palace</span>
       </motion.h1>
 
       {/* Subtext */}
@@ -25,10 +23,10 @@ const NewsLetter = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
         viewport={{ once: true }}
-        className="md:text-base text-sm text-white/90 max-w-lg px-6 mt-3 z-10 leading-relaxed"
+        className="md:text-base text-sm text-black/80 max-w-lg mt-3 z-10 leading-relaxed"
       >
-        Join our paint community for exclusive offers, expert color guides, and
-        new product launches from <b>Gobi’s</b>, <b>ICI</b>, and <b>Diamond Paints</b>.
+        Join our creative community for expert web design insights, color
+        inspiration, and the latest updates — straight to your inbox.
       </motion.p>
 
       {/* Input Field */}
@@ -37,14 +35,14 @@ const NewsLetter = () => {
         whileInView={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
         viewport={{ once: true }}
-        className="flex items-center justify-between w-[90%] sm:w-[80%] md:w-[60%] lg:w-[40%] md:h-14 h-12 z-10 mt-6 bg-white rounded-full overflow-hidden shadow-lg border border-[#03045E]/30"
+        className="flex flex-col sm:flex-row items-center justify-between w-[90%] sm:w-[80%] md:w-[60%] lg:w-[40%] md:h-14 h-auto z-10 mt-6 bg-white rounded-full overflow-hidden shadow-lg border border-[#94d2bd]/60"
       >
         <input
-          className="w-full h-full px-4 text-[#03045E] outline-none placeholder-[#00B4D8]/70 text-sm sm:text-base"
+          className="w-full h-12 px-4 text-[#0A9396] outline-none placeholder-[#0A9396]/60 text-sm sm:text-base"
           type="email"
           placeholder="Enter your email address"
         />
-        <button className="bg-[#03045E] hover:bg-[#00B4D8] transition-all px-6 sm:px-10 h-full text-white font-semibold text-sm sm:text-base rounded-l-none">
+        <button className="bg-[#0A9396] hover:bg-[#94D2BD] transition-all px-6 sm:px-10 h-12 sm:h-full text-white font-semibold text-sm sm:text-base rounded-b-full sm:rounded-l-none sm:rounded-r-full w-full sm:w-auto">
           Subscribe
         </button>
       </motion.div>
@@ -55,13 +53,10 @@ const NewsLetter = () => {
         whileInView={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.5 }}
         viewport={{ once: true }}
-        className="text-xs text-white/80 pt-4 z-10 px-3"
+        className="text-xs text-black/70 pt-4 z-10 max-w-sm"
       >
-        We’ll only send color inspiration and exclusive deals — no spam.
+        We respect your inbox — only creative ideas and design inspiration.
       </motion.p>
-
-      {/* Bottom Accent Bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#03045E] via-[#00B4D8] to-[#FFD60A]" />
     </section>
   );
 };

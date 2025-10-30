@@ -1,7 +1,5 @@
 "use client";
 import { assets } from "@/assets/assets";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
@@ -49,13 +47,13 @@ const AddAddress = () => {
 
   return (
     <>
-      <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center px-4 sm:px-8 md:px-16 py-16">
+      <div className="relative min-h-screen bg-gradient-to-br from-[#94d2bd]/40 via-white to-[#94d2bd]/20 flex items-center justify-center px-4 sm:px-8 md:px-16 py-12">
         {/* Animated Card */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-6xl rounded-2xl shadow-xl bg-neutral-50/90 backdrop-blur-md p-6 sm:p-8 md:p-10 flex flex-col md:flex-row gap-10 md:gap-12 border border-slate-200"
+          className="w-full max-w-6xl rounded-2xl shadow-lg bg-white/90 backdrop-blur-md p-5 sm:p-8 md:p-10 flex flex-col md:flex-row gap-12 md:gap-20 border border-[#0a9396]/20"
         >
           {/* Form Section */}
           <motion.form
@@ -65,14 +63,14 @@ const AddAddress = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
-              Add <span className="text-slate-600">Shipping Address</span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#0a9396]">
+              Add <span className="text-black">Shipping Address</span>
             </h2>
-            <p className="text-slate-500 text-sm">
+            <p className="text-gray-600 text-sm">
               Please fill out the form below to save your delivery details.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {[
                 { id: "fullName", label: "Full name", value: address.fullName },
                 {
@@ -91,12 +89,12 @@ const AddAddress = () => {
                     onChange={(e) =>
                       setAddress({ ...address, [field.id]: e.target.value })
                     }
-                    className="peer w-full border border-slate-300 rounded-xl px-3 pt-5 pb-2 text-slate-700 placeholder-transparent focus:border-slate-600 focus:ring-1 focus:ring-slate-600 outline-none text-sm sm:text-base"
+                    className="peer w-full border border-[#0a9396]/40 rounded-xl px-3 pt-5 pb-2 text-black placeholder-transparent focus:border-[#0a9396] focus:ring-1 focus:ring-[#0a9396] outline-none text-sm sm:text-base transition"
                     placeholder={field.label}
                   />
                   <label
                     htmlFor={field.id}
-                    className="absolute left-3 top-2 text-slate-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-slate-700"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-[#0a9396]"
                   >
                     {field.label}
                   </label>
@@ -113,12 +111,12 @@ const AddAddress = () => {
                 onChange={(e) =>
                   setAddress({ ...address, state: e.target.value })
                 }
-                className="peer w-full border border-slate-300 rounded-xl px-3 pt-5 pb-2 text-slate-700 placeholder-transparent focus:border-slate-600 focus:ring-1 focus:ring-slate-600 outline-none text-sm sm:text-base"
+                className="peer w-full border border-[#0a9396]/40 rounded-xl px-3 pt-5 pb-2 text-black placeholder-transparent focus:border-[#0a9396] focus:ring-1 focus:ring-[#0a9396] outline-none text-sm sm:text-base transition"
                 placeholder="State"
               />
               <label
                 htmlFor="state"
-                className="absolute left-3 top-2 text-slate-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-slate-700"
+                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-[#0a9396]"
               >
                 State
               </label>
@@ -133,12 +131,12 @@ const AddAddress = () => {
                 onChange={(e) =>
                   setAddress({ ...address, area: e.target.value })
                 }
-                className="peer w-full border border-slate-300 rounded-xl px-3 pt-5 pb-2 text-slate-700 placeholder-transparent focus:border-slate-600 focus:ring-1 focus:ring-slate-600 outline-none resize-none text-sm sm:text-base"
+                className="peer w-full border border-[#0a9396]/40 rounded-xl px-3 pt-5 pb-2 text-black placeholder-transparent focus:border-[#0a9396] focus:ring-1 focus:ring-[#0a9396] outline-none resize-none text-sm sm:text-base transition"
                 placeholder="Area"
               ></textarea>
               <label
                 htmlFor="area"
-                className="absolute left-3 top-2 text-slate-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-slate-500 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-slate-700"
+                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-[#0a9396]"
               >
                 Address (Area & Street)
               </label>
@@ -149,7 +147,7 @@ const AddAddress = () => {
               type="submit"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full py-3 bg-slate-700 text-white rounded-xl font-semibold tracking-wide hover:bg-slate-800 transition text-sm sm:text-base"
+              className="w-full py-3 bg-[#0a9396] text-white rounded-xl font-semibold tracking-wide hover:bg-[#086f72] transition text-sm sm:text-base shadow-md"
             >
               Save Address
             </motion.button>
@@ -165,7 +163,7 @@ const AddAddress = () => {
             <Image
               src={assets.my_location_image}
               alt="Location Illustration"
-              className="w-56 sm:w-72 md:w-80 h-auto drop-shadow-xl"
+              className="w-44 sm:w-60 md:w-72 h-auto drop-shadow-lg"
             />
           </motion.div>
         </motion.div>

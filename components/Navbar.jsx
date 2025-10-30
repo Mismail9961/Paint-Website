@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   assets,
   star_icon,
@@ -17,56 +17,61 @@ const Navbar = () => {
   const { isSeller, router } = useAppContext();
   const { openSignIn } = useClerk();
   const { isSignedIn } = useUser();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#03045E]/95 backdrop-blur-md shadow-md border-b border-[#00B4D8]/30">
-      <div className="flex items-center justify-between px-2 sm:px-4 md:px-10 lg:px-24 py-2 sm:py-3 text-white">
+    <nav className="sticky top-0 z-50 bg-[#0A9396] text-white shadow-lg border-b border-[#94D2BD]/40">
+      <div className="flex items-center justify-between px-3 sm:px-5 md:px-10 lg:px-20 py-2 sm:py-3">
+
         {/* Brand */}
         <h1
           onClick={() => router.push("/")}
-          className="cursor-pointer text-lg xs:text-xl sm:text-2xl md:text-3xl font-extrabold tracking-wide leading-tight"
+          className="cursor-pointer text-lg sm:text-2xl font-extrabold tracking-wide leading-tight text-white"
         >
-          <span className="text-[#FFD60A]">Quality</span>{" "}
-          <span className="text-[#00B4D8]">Paint Palace</span>
+          <span className="text-[#94D2BD]">Quality</span>{" "}
+          <span className="text-white">Paint Palace</span>
         </h1>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-          {["Home", "Shop", "About Us", "Contact"].map((item, i) => {
-            let href = "/";
-            if (item === "Shop") href = "/all-products";
-            if (item === "About Us") href = "/about-us";
-            if (item === "Contact") href = "/contact-us";
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          {["Home", "Shop", "About Us", "Contact", "Privacy Policy"].map(
+            (item, i) => {
+              let href = "/";
+              if (item === "Shop") href = "/all-products";
+              if (item === "About Us") href = "/about-us";
+              if (item === "Contact") href = "/contact-us";
+              if (item === "Privacy Policy") href = "/privacy-policy";
 
-            return (
-              <Link
-                key={i}
-                href={href}
-                className="relative group transition text-white/90 hover:text-[#FFD60A]"
-              >
-                {item}
-                <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#FFD60A] transition-all duration-300 group-hover:w-full" />
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  key={i}
+                  href={href}
+                  className="relative group text-white/90 hover:text-[#94D2BD] transition"
+                >
+                  {item}
+                  <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#94D2BD] transition-all duration-300 group-hover:w-full" />
+                </Link>
+              );
+            }
+          )}
 
           {isSeller && (
             <button
               onClick={() => router.push("/seller")}
-              className="text-xs font-semibold border border-[#FFD60A] text-[#FFD60A] px-4 py-1.5 rounded-full hover:bg-[#FFD60A] hover:text-[#03045E] transition"
+              className="text-xs font-semibold border border-[#94D2BD] text-[#94D2BD] px-4 py-1.5 rounded-full hover:bg-[#94D2BD] hover:text-[#0A9396] transition"
             >
               Seller Dashboard
             </button>
           )}
         </div>
 
-        {/* Right side (desktop) */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Desktop Right Side */}
+        <div className="hidden md:flex items-center gap-5">
           <a href="/cart">
             <Image
-              className="w-5 h-5 cursor-pointer opacity-80 hover:opacity-100 transition"
               src={assets.cart_icon}
               alt="cart"
+              className="w-5 h-5 cursor-pointer opacity-90 hover:opacity-100 transition"
               style={{ filter: "brightness(0) invert(1)" }}
             />
           </a>
@@ -75,7 +80,8 @@ const Navbar = () => {
             <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "w-8 h-8 border-2 border-[#00B4D8] rounded-full",
+                  avatarBox:
+                    "w-8 h-8 border-2 border-[#94D2BD] rounded-full",
                 },
               }}
             >
@@ -95,7 +101,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={openSignIn}
-              className="flex items-center gap-2 font-medium hover:text-[#FFD60A] transition"
+              className="flex items-center gap-2 font-medium text-white hover:text-[#94D2BD] transition"
             >
               <Image
                 src={assets.user_icon}
@@ -108,9 +114,9 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Right Side */}
         <div className="flex items-center md:hidden gap-3 h-10">
-          {/* Cart icon (always visible on mobile) */}
+          {/* Cart Icon */}
           <button
             onClick={() => router.push("/cart")}
             className="relative flex items-center justify-center"
@@ -123,72 +129,89 @@ const Navbar = () => {
             />
           </button>
 
-          {isSeller && (
-            <button
-              onClick={() => router.push("/seller")}
-              className="text-[10px] sm:text-xs border border-[#FFD60A] text-[#FFD60A] px-2.5 py-1 rounded-full hover:bg-[#FFD60A] hover:text-[#03045E] transition"
-            >
-              Seller
-            </button>
-          )}
-
-          {isSignedIn ? (
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox:
-                    "w-7 h-7 xs:w-8 xs:h-8 border border-[#00B4D8] rounded-full",
-                },
-              }}
-            >
-              <UserButton.MenuItems>
-                <UserButton.Action
-                  label="Home"
-                  labelIcon={<HomeIcon />}
-                  onClick={() => router.push("/")}
-                />
-                <UserButton.Action
-                  label="About Us"
-                  labelIcon={<star_icon />}
-                  onClick={() => router.push("/about-us")}
-                />
-                <UserButton.Action
-                  label="Contact Us"
-                  labelIcon={<star_icon />}
-                  onClick={() => router.push("/contact-us")}
-                />
-                <UserButton.Action
-                  label="Products"
-                  labelIcon={<BoxIcon />}
-                  onClick={() => router.push("/all-products")}
-                />
-                <UserButton.Action
-                  label="Cart"
-                  labelIcon={<CartIcon />}
-                  onClick={() => router.push("/cart")}
-                />
-                <UserButton.Action
-                  label="My Orders"
-                  labelIcon={<BagIcon />}
-                  onClick={() => router.push("/my-orders")}
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-          ) : (
-            <button
-              onClick={openSignIn}
-              className="flex items-center gap-1.5 font-medium hover:text-[#FFD60A] transition"
-            >
-              <Image
-                src={assets.user_icon}
-                alt="user"
-                className="w-4 h-4 sm:w-5 sm:h-5 opacity-90"
-                style={{ filter: "brightness(0) invert(1)" }}
-              />
-            </button>
-          )}
+          {/* Toggle Button */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex flex-col justify-center items-center w-7 h-7 space-y-1 focus:outline-none"
+          >
+            <span
+              className={`block h-0.5 w-5 bg-white transition-transform ${
+                menuOpen ? "rotate-45 translate-y-1.5" : ""
+              }`}
+            />
+            <span
+              className={`block h-0.5 w-5 bg-white ${
+                menuOpen ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`block h-0.5 w-5 bg-white transition-transform ${
+                menuOpen ? "-rotate-45 -translate-y-1.5" : ""
+              }`}
+            />
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="md:hidden bg-[#0A9396] border-t border-[#94D2BD]/40">
+          <div className="flex flex-col items-center gap-3 py-4 text-sm font-medium text-white">
+            <Link
+              href="/"
+              onClick={() => setMenuOpen(false)}
+              className="hover:text-[#94D2BD] transition"
+            >
+              Home
+            </Link>
+            <Link
+              href="/about-us"
+              onClick={() => setMenuOpen(false)}
+              className="hover:text-[#94D2BD] transition"
+            >
+              About
+            </Link>
+            <Link
+              href="/contact-us"
+              onClick={() => setMenuOpen(false)}
+              className="hover:text-[#94D2BD] transition"
+            >
+              Contact
+            </Link>
+            <Link
+              href="/all-products"
+              onClick={() => setMenuOpen(false)}
+              className="hover:text-[#94D2BD] transition"
+            >
+              Shop
+            </Link>
+
+            {isSeller && (
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  router.push("/seller");
+                }}
+                className="text-xs border border-[#94D2BD] text-[#94D2BD] px-3 py-1 rounded-full hover:bg-[#94D2BD] hover:text-[#0A9396] transition"
+              >
+                Seller Dashboard
+              </button>
+            )}
+
+            {!isSignedIn && (
+              <button
+                onClick={() => {
+                  openSignIn();
+                  setMenuOpen(false);
+                }}
+                className="text-white hover:text-[#94D2BD] transition"
+              >
+                Sign In
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

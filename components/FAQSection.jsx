@@ -35,7 +35,7 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <section className=" text-white py-16 sm:py-20 h-[60vh] sm:px-10 md:px-16 lg:px-32 overflow-hidden">
+    <section className="text-white py-12 sm:py-20 px-4 sm:px-8 md:px-16 lg:px-32 overflow-hidden rounded-3xl">
       <div className="max-w-5xl mx-auto">
         {/* Heading */}
         <motion.h2
@@ -43,10 +43,10 @@ export default function FAQSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-10 text-center"
+          className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-10 text-center"
         >
           Frequently Asked{" "}
-          <span className="text-[#FFD60A] drop-shadow-sm">Questions</span>
+          <span className="text-[#94d2bd] drop-shadow-sm">Questions</span>
         </motion.h2>
 
         {/* FAQ Items */}
@@ -58,20 +58,20 @@ export default function FAQSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
               viewport={{ once: true }}
-              className="bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20 hover:border-[#FFD60A]/60 transition-all shadow-md"
+              className="bg-white text-black rounded-2xl border border-[#94d2bd]/60 shadow-md hover:shadow-lg hover:border-[#0a9396] transition-all"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full flex justify-between items-center text-left py-4 px-4 sm:px-6 focus:outline-none"
+                className="w-full flex justify-between items-center text-left py-3 px-4 sm:px-6 focus:outline-none"
               >
-                <span className="font-medium text-base sm:text-lg text-[#FFD60A]">
+                <span className="font-semibold text-sm sm:text-lg text-[#0a9396]">
                   {faq.question}
                 </span>
                 <motion.div
                   animate={{ rotate: openIndex === i ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <ChevronDown className="w-5 h-5 text-[#FFD60A]" />
+                  <ChevronDown className="w-5 h-5 text-[#0a9396]" />
                 </motion.div>
               </button>
 
@@ -84,14 +84,14 @@ export default function FAQSection() {
                     transition={{ duration: 0.4 }}
                     className="overflow-hidden"
                   >
-                    <p className="text-blue-50 text-sm sm:text-base leading-relaxed px-4 sm:px-6 pb-4">
+                    <p className="text-gray-800 text-xs sm:text-base leading-relaxed px-4 sm:px-6 pb-4">
                       {faq.answer}
                     </p>
                     <motion.div
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.6 }}
-                      className="h-1 bg-gradient-to-r from-[#FFD60A] via-[#00B4D8] to-[#FFD60A] rounded-full mx-4 sm:mx-6"
+                      className="h-1 bg-gradient-to-r from-[#0a9396] via-[#94d2bd] to-[#0a9396] rounded-full mx-4 sm:mx-6"
                     />
                   </motion.div>
                 )}

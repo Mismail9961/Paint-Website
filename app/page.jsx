@@ -10,23 +10,26 @@ import { motion } from "framer-motion";
 
 export default function HomePage() {
   return (
-    <main className="relative overflow-hidden min-h-screen bg-gradient-to-b from-[#03045E] via-[#00B4D8] to-[#FFD60A]">
-      {/* Animated background glows */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.3 }}
-        transition={{ duration: 2 }}
-        className="absolute top-0 left-0 w-[300px] h-[300px] bg-[#00B4D8]/40 blur-[160px]"
-      />
+    <main
+      role="main"
+      className="relative overflow-hidden min-h-screen bg-gradient-to-b from-[#0a9396] via-[#94d2bd] to-white text-black"
+    >
+      {/* Animated soft glows for background depth */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.25 }}
+        transition={{ duration: 2 }}
+        className="absolute top-0 left-0 w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] bg-[#0a9396]/40 blur-[100px] will-change-[opacity]"
+      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.2 }}
         transition={{ duration: 2, delay: 0.5 }}
-        className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-[#FFD60A]/40 blur-[160px]"
+        className="absolute bottom-0 right-0 w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] bg-[#94d2bd]/40 blur-[100px] will-change-[opacity]"
       />
 
       {/* Content Wrapper */}
-      <div className="relative z-10 px-4 sm:px-6 md:px-16 lg:px-32 space-y-20 md:space-y-28">
+      <div className="relative z-10 px-3 sm:px-6 md:px-12 lg:px-20 space-y-10 sm:space-y-14 md:space-y-24 pb-20">
         <HeaderSlider />
         <HomeProducts />
         <PaintProductsSection />
@@ -35,12 +38,12 @@ export default function HomePage() {
         <NewsLetter />
       </div>
 
-      {/* Animated divider glow at bottom */}
+      {/* Bottom Accent Gradient */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="absolute bottom-0 left-0 w-full h-[120px] bg-gradient-to-t from-[#03045E] to-transparent"
+        className="absolute bottom-0 left-0 w-full h-[100px] bg-gradient-to-t from-[#0a9396]/60 to-transparent"
       />
     </main>
   );

@@ -34,7 +34,7 @@ const HomeProducts = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-20 text-[#03045E] font-semibold">
+      <div className="text-center py-20 text-[#0A9396] font-semibold">
         Loading products...
       </div>
     );
@@ -42,37 +42,36 @@ const HomeProducts = () => {
 
   if (!products.length) {
     return (
-      <div className="text-center py-20 text-[#03045E] font-semibold">
+      <div className="text-center py-20 text-[#0A9396] font-semibold">
         No products found.
       </div>
     );
   }
 
   return (
-    <section className="py-20 ">
+    <section className="py-20">
       {/* Header */}
       <div className="text-center mb-14 px-4 sm:px-6">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#03045E]">
-          Featured Gobi&apos;s Paints
+        <h2
+          className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text 
+  bg-gradient-to-r from-white via-[#94D2BD] to-[#0A9396]"
+        >
+          Featured Products
         </h2>
-        <div className="w-20 h-1 bg-[#FFD60A] mx-auto mt-3 rounded"></div>
-        <p className="text-white mt-4 max-w-xl mx-auto text-sm sm:text-base">
-          Discover Gobi&apos;s most popular paint finishes — crafted for beauty, protection, 
-          and long-lasting color in Pakistan&apos;s climate.
-        </p>
       </div>
 
       {/* Paint Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 px-4 sm:px-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-8 px-4 sm:px-10 lg:px-16">
         {products.map((paint) => (
           <motion.div
             key={paint._id}
             onClick={() => router.push(`/product/${paint._id}`)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="group bg-white border border-[#00B4D8]/30 rounded-2xl shadow-md hover:shadow-xl overflow-hidden cursor-pointer transition-all"
+            className="group bg-white border border-[#94D2BD]/50 rounded-2xl shadow-md hover:shadow-lg overflow-hidden cursor-pointer transition-all"
           >
-            <div className="relative w-full h-52 sm:h-60 bg-[#03045E]/5 overflow-hidden">
+            {/* Image */}
+            <div className="relative w-full h-48 sm:h-56 bg-[#94D2BD]/10 overflow-hidden">
               <Image
                 src={paint.images?.[0] || "/no-image.jpg"}
                 alt={paint.title}
@@ -80,26 +79,34 @@ const HomeProducts = () => {
                 className="object-contain group-hover:scale-105 transition-transform duration-500"
               />
             </div>
+
+            {/* Content */}
             <div className="p-4 sm:p-5">
-              <h3 className="text-sm sm:text-base font-semibold text-[#03045E] truncate">
+              <h3 className="text-base sm:text-lg font-semibold text-[#0A9396] truncate">
                 {paint.title}
               </h3>
-              <p className="text-xs sm:text-sm text-black mt-1 line-clamp-2 max-sm:hidden">
+              <p className="text-xs sm:text-sm text-black/70 mt-1 line-clamp-2 max-sm:hidden">
                 {paint.description}
               </p>
-              <div className="mt-2 sm:mt-3">
-                <p className="font-semibold text-[#03045E]">
+
+              <div className="mt-3">
+                <p className="font-semibold text-[#0A9396]">
                   {paint.price ? `${paint.price} PKR` : "Price not available"}
                 </p>
               </div>
+
               <motion.button
-                whileHover={{ scale: 1.05, backgroundColor: "#FFD60A", color: "#03045E" }}
+                whileHover={{
+                  scale: 1.05,
+                  backgroundColor: "#94D2BD",
+                  color: "#000000",
+                }}
                 whileTap={{ scale: 0.95 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(`/product/${paint._id}`);
                 }}
-                className="mt-3 sm:mt-4 w-full sm:w-auto bg-[#03045E] text-white px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-sm hover:shadow-md"
+                className="mt-4 w-full bg-[#0A9396] text-white px-5 py-2 rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow-md"
               >
                 View Details
               </motion.button>

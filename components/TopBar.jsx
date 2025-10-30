@@ -10,58 +10,82 @@ import {
 
 const TopBar = () => {
   return (
-    // 👇 Hidden on mobile, visible on md+
-    <div className="hidden md:flex bg-[#FFD60A] text-[#03045E] text-sm py-2.5 px-6 md:px-16 lg:px-32 items-center justify-between gap-2 border-b border-[#03045E]/20 shadow-md">
-      
-      {/* Left Info */}
-      <div className="flex flex-wrap items-center gap-6 font-medium">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-[#03045E]/10 rounded-full">
-            <FaPhone className="text-[#03045E]" />
+    <>
+      {/* Desktop & Tablet View */}
+      <div className="hidden sm:flex bg-[#0A9396] text-white text-sm py-2.5 px-6 sm:px-10 md:px-16 lg:px-32 
+                      items-center justify-between gap-3 border-b border-[#94D2BD]/40 shadow-md">
+        {/* Left Info */}
+        <div className="flex flex-wrap items-center gap-5 font-medium">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-white/20 rounded-full">
+              <FaPhone className="text-white" />
+            </div>
+            <a
+              href="tel:+923313649161"
+              className="hover:text-[#94D2BD] transition-colors duration-200"
+            >
+              +92 331 3649161
+            </a>
           </div>
-          <a
-            href="tel:+923313649161"
-            className="hover:text-[#00B4D8] transition-colors duration-200"
-          >
-            +92 331 3649161
-          </a>
+
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-white/20 rounded-full">
+              <FaEnvelope className="text-white" />
+            </div>
+            <a
+              href="mailto:info@karachipaint.com"
+              className="hover:text-[#94D2BD] transition-colors duration-200"
+            >
+              info@karachipaint.com
+            </a>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-[#03045E]/10 rounded-full">
-            <FaEnvelope className="text-[#03045E]" />
-          </div>
+        {/* Right Social Links */}
+        <div className="flex items-center gap-3">
           <a
-            href="mailto:info@karachipaint.com"
-            className="hover:text-[#00B4D8] transition-colors duration-200"
+            href="#"
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#0A9396] 
+                       transition-all duration-200 shadow-sm"
           >
-            info@karachipaint.com
+            <FaFacebookF className="text-xs" />
+          </a>
+          <a
+            href="#"
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#0A9396] 
+                       transition-all duration-200 shadow-sm"
+          >
+            <FaInstagram className="text-xs" />
+          </a>
+          <a
+            href="#"
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#0A9396] 
+                       transition-all duration-200 shadow-sm"
+          >
+            <FaWhatsapp className="text-xs" />
           </a>
         </div>
       </div>
 
-      {/* Right Social Links */}
-      <div className="flex items-center gap-3">
-        <a
-          href="#"
-          className="w-7 h-7 flex items-center justify-center rounded-full bg-[#03045E] hover:bg-[#00B4D8] text-white transition-all duration-200 shadow-sm"
-        >
-          <FaFacebookF className="text-xs" />
+      {/* Mobile View (iPhone 5s) */}
+      <div className="sm:hidden flex flex-wrap items-center justify-center gap-2 py-2 bg-[#0A9396] text-white text-xs">
+        <a href="tel:+923313649161" className="flex items-center gap-1">
+          <FaPhone className="text-[#94D2BD]" />
+          <span>Call</span>
         </a>
-        <a
-          href="#"
-          className="w-7 h-7 flex items-center justify-center rounded-full bg-[#03045E] hover:bg-[#00B4D8] text-white transition-all duration-200 shadow-sm"
-        >
-          <FaInstagram className="text-xs" />
+        <span className="opacity-50">|</span>
+        <a href="mailto:info@karachipaint.com" className="flex items-center gap-1">
+          <FaEnvelope className="text-[#94D2BD]" />
+          <span>Email</span>
         </a>
-        <a
-          href="#"
-          className="w-7 h-7 flex items-center justify-center rounded-full bg-[#03045E] hover:bg-[#00B4D8] text-white transition-all duration-200 shadow-sm"
-        >
-          <FaWhatsapp className="text-xs" />
-        </a>
+        <span className="opacity-50">|</span>
+        <div className="flex items-center gap-2">
+          <FaFacebookF className="text-[#94D2BD]" />
+          <FaInstagram className="text-[#94D2BD]" />
+          <FaWhatsapp className="text-[#94D2BD]" />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

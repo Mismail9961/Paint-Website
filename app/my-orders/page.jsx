@@ -12,25 +12,15 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 🧭 Fetch Orders
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/order/list");
       const data = await res.json();
 
-      console.log("📦 Orders:", data);
-      
-      // Debug: Check first order structure
-      if (data.orders && data.orders.length > 0) {
-        console.log("🔍 First order item:", data.orders[0].items[0]);
-        console.log("🔍 Product object:", data.orders[0].items[0]?.product);
-      }
-
       if (!data.success) throw new Error(data.message || "Failed to fetch orders");
       setOrders(data.orders || []);
     } catch (err) {
-      console.error("❌ Fetch orders error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -41,28 +31,19 @@ const MyOrders = () => {
     fetchOrders();
   }, []);
 
-  // 🧠 Helper: safely get first image from either paintProduct or product
   const getOrderImage = (order) => {
     for (const item of order.items || []) {
-      // Check paintProduct first
       const paintImg = item?.paintProduct?.images?.[0];
-      if (paintImg) {
-        return paintImg.startsWith("http") ? paintImg : `/uploads/${paintImg}`;
-      }
-      
-      // Then check regular product - try multiple possible field names
+      if (paintImg) return paintImg.startsWith("http") ? paintImg : `/uploads/${paintImg}`;
       const product = item?.product;
       if (product) {
-        // Try different image field names
-        const productImg = 
-          product.images?.[0] || 
-          product.image?.[0] || 
-          product.image || 
-          product.picture || 
+        const productImg =
+          product.images?.[0] ||
+          product.image?.[0] ||
+          product.image ||
+          product.picture ||
           product.imageUrl;
-        
         if (productImg) {
-          // Handle both string and array
           const imgUrl = Array.isArray(productImg) ? productImg[0] : productImg;
           return imgUrl.startsWith("http") ? imgUrl : `/uploads/${imgUrl}`;
         }
@@ -73,31 +54,33 @@ const MyOrders = () => {
 
   return (
     <>
-      <div className="flex flex-col justify-between px-6 md:px-16 lg:px-32 py-6 min-h-screen">
-        <div className="space-y-5">
-          <h2 className="text-lg font-medium mt-6">My Orders</h2>
+      <div className="flex flex-col justify-between bg-white text-black min-h-screen px-4 sm:px-6 md:px-10 py-6">
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold text-center text-[#0a9396] mt-4 mb-4">
+            My Orders
+          </h2>
 
           {loading ? (
             <Loading />
           ) : error ? (
-            <p className="text-red-500">{error}</p>
+            <p className="text-red-600 text-center">{error}</p>
           ) : orders.length === 0 ? (
-            <p className="text-gray-500">You have no orders yet.</p>
+            <p className="text-gray-500 text-center">You have no orders yet.</p>
           ) : (
-            <div className="max-w-5xl border-t border-gray-300 text-sm">
+            <div className="max-w-5xl mx-auto border-t border-[#94d2bd] text-sm rounded-xl overflow-hidden shadow-md">
               {orders.map((order, index) => (
                 <div
                   key={order._id || index}
-                  className="flex flex-col md:flex-row gap-5 justify-between p-5 border-b border-gray-300"
+                  className="flex flex-col md:flex-row gap-5 justify-between p-4 sm:p-5 border-b border-[#94d2bd] bg-[#f9f9f9] hover:bg-[#94d2bd]/10 transition-all duration-300"
                 >
                   {/* 🧱 Product Details */}
-                  <div className="flex-1 flex gap-5 max-w-80">
-                    <div className="w-16 h-16 relative">
+                  <div className="flex-1 flex gap-4 max-w-80">
+                    <div className="w-16 h-16 relative flex-shrink-0">
                       <Image
                         src={getOrderImage(order)}
                         alt="product image"
                         fill
-                        className="object-cover rounded-md"
+                        className="object-cover rounded-md border border-[#94d2bd]"
                         onError={(e) => {
                           e.target.src = "https://cdn-icons-png.flaticon.com/512/4341/4341062.png";
                         }}
@@ -105,26 +88,21 @@ const MyOrders = () => {
                       />
                     </div>
 
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 text-sm sm:text-base">
                       {order.items.map((item, i) => {
-                        // Get product info from either paintProduct or product
                         const product = item.paintProduct || item.product;
-                        const isPaint = !!item.paintProduct;
-                        
-                        // Fallback: If no product reference, show basic item info
                         const productName = product?.name || "Product";
                         const hasShade = item.shadeNumber && item.shadeNumber !== "N/A";
-                        
                         return (
                           <div key={i}>
-                            <span className="font-medium text-base">
+                            <span className="font-medium text-[#0a9396] block leading-tight">
                               {productName}
-                              <br />
-                              {hasShade && `Shade: ${item.shadeNumber} × `}
-                              {!hasShade && "Quantity: "}
+                            </span>
+                            <span className="text-black/70 text-sm">
+                              {hasShade ? `Shade: ${item.shadeNumber} × ` : "Quantity: "}
                               {item.quantity}
                             </span>
-                            <span className="text-gray-500 text-sm block">
+                            <span className="text-[#0a9396] text-sm block">
                               Price: {currency}
                               {item.offerPrice || item.price}
                             </span>
@@ -138,9 +116,9 @@ const MyOrders = () => {
                   </div>
 
                   {/* 📦 Shipping Address */}
-                  <div className="text-sm">
+                  <div className="text-sm text-black/80">
                     <p>
-                      <span className="font-medium">{order.address.fullName}</span>
+                      <span className="font-semibold text-[#0a9396]">{order.address.fullName}</span>
                       <br />
                       <span>{order.address.area}</span>
                       <br />
@@ -151,21 +129,27 @@ const MyOrders = () => {
                   </div>
 
                   {/* 💰 Amount */}
-                  <p className="font-medium my-auto whitespace-nowrap">
+                  <p className="font-semibold text-[#0a9396] my-auto whitespace-nowrap">
                     {currency}
                     {order.amount}
                   </p>
 
                   {/* 🕒 Status + Info */}
-                  <div className="text-sm text-right md:text-left">
-                    <p className="flex flex-col">
-                      <span>Status: {order.status}</span>
+                  <div className="text-sm text-right md:text-left text-black/70">
+                    <p className="flex flex-col gap-1">
                       <span>
-                        Date:{" "}
+                        <span className="font-medium text-[#0a9396]">Status:</span> {order.status}
+                      </span>
+                      <span>
+                        <span className="font-medium text-[#0a9396]">Date:</span>{" "}
                         {new Date(order.createdAt || order.date).toLocaleDateString()}
                       </span>
-                      <span>Payment: Pending</span>
-                      <span>Method: COD</span>
+                      <span>
+                        <span className="font-medium text-[#0a9396]">Payment:</span> Pending
+                      </span>
+                      <span>
+                        <span className="font-medium text-[#0a9396]">Method:</span> COD
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -174,6 +158,31 @@ const MyOrders = () => {
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 320px) {
+          h2 {
+            font-size: 1.2rem;
+          }
+          .flex {
+            flex-direction: column !important;
+          }
+          .w-16,
+          .h-16 {
+            width: 48px !important;
+            height: 48px !important;
+          }
+          .text-sm {
+            font-size: 0.75rem !important;
+          }
+          .text-base {
+            font-size: 0.8rem !important;
+          }
+          .p-5 {
+            padding: 0.75rem !important;
+          }
+        }
+      `}</style>
     </>
   );
 };

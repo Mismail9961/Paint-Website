@@ -54,53 +54,60 @@ export default function ContactUs() {
   }
 
   return (
-    <main className="  w-full mx-auto px-4 sm:px-6 md:px-10 py-12 bg-[#03045E] text-white min-h-screen">
+    <main className="w-full mx-auto px-3 sm:px-6 md:px-10 py-10 bg-white text-black min-h-screen">
+      {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8 text-center sm:text-left"
+        className="mb-10 text-center sm:text-left"
       >
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#FFD60A]">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0A9396]">
           Contact Us
         </h1>
-        <p className="mt-2 text-[#00B4D8]/90 text-sm sm:text-base">
+        <p className="mt-2 text-gray-700 text-sm sm:text-base">
           Need help with an order, returns, or product details? We’re here for you.
         </p>
       </motion.header>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Contact Info */}
         <aside className="space-y-6">
-          <div className="rounded-2xl p-6 shadow-lg border border-[#FFD60A]/30 bg-[#00B4D8]/20">
-            <h3 className="text-lg font-semibold text-[#FFD60A]">Customer Support</h3>
-            <p className="mt-2 text-sm text-white/80">Mon - Fri: 9:00 — 18:00 (PKT)</p>
+          <div className="rounded-2xl p-6 shadow-md border border-[#94D2BD]/40 bg-[#94D2BD]/20">
+            <h3 className="text-lg font-semibold text-[#0A9396]">
+              Customer Support
+            </h3>
+            <p className="mt-1 text-sm text-gray-800">
+              Mon – Fri : 9:00 — 18:00 (PKT)
+            </p>
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex items-start gap-3">
-                <Phone className="w-5 h-5 shrink-0 text-[#FFD60A]" />
+                <Phone className="w-5 h-5 shrink-0 text-[#0A9396]" />
                 <div>
                   <dt className="font-medium">Phone</dt>
-                  <dd className="text-white/80">+92 3102437201</dd>
+                  <dd className="text-gray-700">+92 310 2437201</dd>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Mail className="w-5 h-5 shrink-0 text-[#FFD60A]" />
+                <Mail className="w-5 h-5 shrink-0 text-[#0A9396]" />
                 <div>
                   <dt className="font-medium">Email</dt>
-                  <dd className="text-white/80">sheikhmuhammadismail79@gmail.com</dd>
+                  <dd className="text-gray-700">
+                    sheikhmuhammadismail79@gmail.com
+                  </dd>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 shrink-0 text-[#FFD60A]" />
+                <MapPin className="w-5 h-5 shrink-0 text-[#0A9396]" />
                 <div>
                   <dt className="font-medium">Address</dt>
-                  <dd className="text-white/80">Gulberg, Karachi, Pakistan</dd>
+                  <dd className="text-gray-700">Gulberg, Karachi, Pakistan</dd>
                 </div>
               </div>
             </dl>
           </div>
 
-          <div className="rounded-2xl overflow-hidden border border-[#FFD60A]/20">
+          <div className="rounded-2xl overflow-hidden border border-[#94D2BD]/40">
             <iframe
               title="Store location"
               className="w-full h-52"
@@ -109,10 +116,11 @@ export default function ContactUs() {
             />
           </div>
 
-          <div className="rounded-2xl p-4 bg-[#FFD60A]/10 border border-[#FFD60A]/30">
-            <h4 className="text-sm font-semibold text-[#FFD60A]">Pro tip</h4>
-            <p className="text-sm mt-2 text-white/80">
-              Include your order number if your message is about an existing order — it helps us resolve faster.
+          <div className="rounded-2xl p-4 bg-[#94D2BD]/20 border border-[#0A9396]/30">
+            <h4 className="text-sm font-semibold text-[#0A9396]">Pro tip</h4>
+            <p className="text-sm mt-2 text-gray-800">
+              Include your order number if your message is about an existing
+              order — it helps us resolve faster.
             </p>
           </div>
         </aside>
@@ -120,7 +128,7 @@ export default function ContactUs() {
         {/* Contact Form */}
         <motion.form
           onSubmit={handleSubmit}
-          className="lg:col-span-2 rounded-2xl border border-[#FFD60A]/30 p-6 bg-[#03045E]/90 shadow-lg"
+          className="lg:col-span-2 rounded-2xl border border-[#94D2BD]/40 p-6 bg-[#94D2BD]/10 shadow-md"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -129,53 +137,79 @@ export default function ContactUs() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {["name", "email", "orderNumber", "subject"].map((field, idx) => (
               <div key={idx}>
-                <label className="block text-sm font-medium capitalize text-[#FFD60A]">
-                  {field === "orderNumber" ? "Order number (optional)" : field}
+                <label className="block text-sm font-medium capitalize text-[#0A9396]">
+                  {field === "orderNumber"
+                    ? "Order number (optional)"
+                    : field}
                 </label>
                 <input
                   type={field === "email" ? "email" : "text"}
-                  placeholder={field === "email" ? "you@domain.com" : `Enter your ${field}`}
+                  placeholder={
+                    field === "email"
+                      ? "you@domain.com"
+                      : `Enter your ${field}`
+                  }
                   value={form[field]}
-                  onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                  className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-                    errors[field] ? "border-red-400 focus:ring-red-200" : "border-[#FFD60A]/70 focus:ring-[#00B4D8]"
-                  } bg-[#03045E]/70 text-white placeholder-white/60`}
+                  onChange={(e) =>
+                    setForm({ ...form, [field]: e.target.value })
+                  }
+                  className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                    errors[field]
+                      ? "border-red-400 focus:ring-red-200"
+                      : "border-[#0A9396]/60 focus:ring-[#94D2BD]"
+                  } bg-white text-black placeholder-gray-500`}
                 />
-                {errors[field] && <p className="mt-1 text-xs text-red-400">{errors[field]}</p>}
+                {errors[field] && (
+                  <p className="mt-1 text-xs text-red-500">{errors[field]}</p>
+                )}
               </div>
             ))}
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium text-[#FFD60A]">Message</label>
+            <label className="block text-sm font-medium text-[#0A9396]">
+              Message
+            </label>
             <textarea
               placeholder="Type your message here..."
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
-              className={`mt-1 block w-full rounded-md border px-3 py-2 min-h-[140px] shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-                errors.message ? "border-red-400 focus:ring-red-200" : "border-[#FFD60A]/70 focus:ring-[#00B4D8]"
-              } bg-[#03045E]/70 text-white placeholder-white/60`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 min-h-[140px] text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                errors.message
+                  ? "border-red-400 focus:ring-red-200"
+                  : "border-[#0A9396]/60 focus:ring-[#94D2BD]"
+              } bg-white text-black placeholder-gray-500`}
             />
-            {errors.message && <p className="mt-1 text-xs text-red-400">{errors.message}</p>}
+            {errors.message && (
+              <p className="mt-1 text-xs text-red-500">{errors.message}</p>
+            )}
           </div>
 
           <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#FFD60A] text-[#03045E] px-4 py-2 font-medium shadow hover:opacity-95 disabled:opacity-60 transition-all"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#0A9396] text-white px-4 py-2 font-medium shadow hover:opacity-95 disabled:opacity-60 transition-all"
             >
               {submitting ? "Sending..." : "Send Message"}
             </button>
             <button
               type="button"
-              onClick={() => setForm({ name: "", email: "", orderNumber: "", subject: "", message: "" })}
-              className="text-sm underline text-[#00B4D8]"
+              onClick={() =>
+                setForm({
+                  name: "",
+                  email: "",
+                  orderNumber: "",
+                  subject: "",
+                  message: "",
+                })
+              }
+              className="text-sm underline text-[#0A9396]"
             >
               Reset
             </button>
 
-            <div className="ml-auto mt-2 sm:mt-0 text-sm flex items-center gap-2 text-[#00B4D8]">
+            <div className="ml-auto mt-2 sm:mt-0 text-sm flex items-center gap-2 text-[#0A9396]">
               <CheckCircle className="w-4 h-4" />
               Response time: <strong className="ml-1">within 24 hours</strong>
             </div>
