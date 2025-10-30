@@ -146,16 +146,6 @@ const Navbar = () => {
                   onClick={() => router.push("/")}
                 />
                 <UserButton.Action
-                  label="About Us"
-                  labelIcon={<star_icon />}
-                  onClick={() => router.push("/about-us")}
-                />
-                <UserButton.Action
-                  label="Contact Us"
-                  labelIcon={<star_icon />}
-                  onClick={() => router.push("/contact-us")}
-                />
-                <UserButton.Action
                   label="Products"
                   labelIcon={<BoxIcon />}
                   onClick={() => router.push("/all-products")}
