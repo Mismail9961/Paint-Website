@@ -128,7 +128,7 @@ const OrderSummary = () => {
   }, [user]);
 
   return (
-    <div className="w-full md:w-96 h-[45vh] bg-white p-5 rounded-2xl shadow-md border border-[#0A9396]/20">
+    <div className="w-full md:w-96 h-[50vh] bg-white p-5 rounded-2xl shadow-md border border-[#0A9396]/20">
       <h2 className="text-xl md:text-2xl font-semibold text-[#0A9396]">
         Order Summary
       </h2>
@@ -228,7 +228,7 @@ const OrderSummary = () => {
           </div>
         </div>
       </div>
-
+      <p className="text-[#0A9396] py-2">Free delivery all over Karachi</p>
       <button
         onClick={createOrder}
         className="w-full bg-[#0A9396] text-white py-3 mt-5 rounded-md shadow-md hover:bg-[#0A9396]/90 transition disabled:opacity-50 disabled:cursor-not-allowed"

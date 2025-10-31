@@ -109,7 +109,6 @@ const Navbar = () => {
                 className="w-5 h-5 opacity-90"
                 style={{ filter: "brightness(0) invert(1)" }}
               />
-              Account
             </button>
           )}
         </div>
