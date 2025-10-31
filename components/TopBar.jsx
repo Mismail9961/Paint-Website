@@ -17,7 +17,7 @@ const TopBar = () => {
     <>
       {/* Desktop & Tablet View */}
       <div
-        className="hidden sm:flex bg-[#0A9396] text-white text-sm py-2.5 px-6 sm:px-10 md:px-16 lg:px-32 
+        className="hidden sm:flex bg-[#005F73] text-white text-sm py-2.5 px-6 sm:px-10 md:px-16 lg:px-32 
                       items-center justify-between gap-3 border-b border-[#94D2BD]/40 shadow-md"
       >
         {/* Left Info */}
@@ -53,21 +53,21 @@ const TopBar = () => {
           <div className="flex items-center gap-3">
             <a
               href="#"
-              className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#0A9396] 
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#005F73] 
                        transition-all duration-200 shadow-sm"
             >
               <FaFacebookF className="text-xs" />
             </a>
             <a
               href="#"
-              className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#0A9396] 
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#005F73] 
                        transition-all duration-200 shadow-sm"
             >
               <FaInstagram className="text-xs" />
             </a>
             <a
               href="#"
-              className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#0A9396] 
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-[#94D2BD] hover:bg-white text-[#005F73] 
                        transition-all duration-200 shadow-sm"
             >
               <FaWhatsapp className="text-xs" />
@@ -108,7 +108,7 @@ const TopBar = () => {
       </div>
 
       {/* Mobile View */}
-      <div className="sm:hidden flex flex-wrap items-center justify-center gap-2 py-2 bg-[#0A9396] text-white text-xs">
+      <div className="sm:hidden flex flex-wrap items-center justify-center gap-2 py-2 bg-[#005F73] text-white text-xs">
         <a href="tel:+923313649161" className="flex items-center gap-1">
           <FaPhone className="text-[#94D2BD]" />
           <span>Call</span>
