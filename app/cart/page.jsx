@@ -90,6 +90,7 @@ const Cart = () => {
 
                   const price = product.offerPrice || product.price || 0;
                   const shade = cartItem.shadeNumber || "-";
+                  const quantityType = cartItem.quantityType || "—"; // ✅ Added safely
 
                   return (
                     <motion.div
@@ -117,6 +118,9 @@ const Cart = () => {
                         </p>
                         <p className="text-sm text-[#03045E]/70">
                           Shade: <span className="font-medium">{shade}</span>
+                        </p>
+                        <p className="text-sm text-[#03045E]/70">
+                          Type: <span className="font-medium">{quantityType}</span> {/* ✅ Added */}
                         </p>
                         <p className="text-sm text-[#03045E]/70">
                           Price: Rs. {price.toFixed(2)}

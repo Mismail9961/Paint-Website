@@ -30,6 +30,12 @@ const PaintOrderSchema = new mongoose.Schema(
           default: null,
         },
         shadeNumber: { type: String, trim: true, default: "" },
+        quantityType: {
+          type: String,
+          enum: ["Drum", "Gallon", "Quarter"], // ✅ Added this
+          required: false,
+          default: "Gallon",
+        },
         quantity: { type: Number, required: true, min: 1 },
         price: { type: Number, required: true, min: 0 },
         offerPrice: { type: Number, default: 0, min: 0 },

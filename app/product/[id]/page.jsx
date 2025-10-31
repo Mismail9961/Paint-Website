@@ -18,6 +18,7 @@ const Product = () => {
   const [isPaintProduct, setIsPaintProduct] = useState(false);
   const [showShadeModal, setShowShadeModal] = useState(false);
   const [shadeNumber, setShadeNumber] = useState("");
+  const [quantityType, setQuantityType] = useState(""); // 🆕 added for Drum/Quarter/Gallon
 
   useEffect(() => {
     if (!id || (!products.length && !paintProducts.length)) return;
@@ -39,7 +40,7 @@ const Product = () => {
   const images = productData.images?.filter(Boolean) || [];
   const main = mainImage || images[0] || assets.placeholder;
 
-  const featuredProducts = isPaintProduct 
+  const featuredProducts = isPaintProduct
     ? paintProducts.filter((p) => p._id !== id).slice(0, 5)
     : products.filter((p) => p._id !== id).slice(0, 5);
 
@@ -56,7 +57,12 @@ const Product = () => {
       toast.error("Please enter a shade number.");
       return;
     }
-    addToCart(productData._id, { shadeNumber });
+    if (!quantityType) {
+      toast.error("Please select a quantity type (Drum, Quarter, or Gallon).");
+      return;
+    }
+
+    addToCart(productData._id, { shadeNumber, quantityType });
     setShowShadeModal(false);
     router.push("/cart");
   };
@@ -132,9 +138,15 @@ const Product = () => {
 
             {isPaintProduct && (
               <div className="text-sm text-[#03045E]/80 space-y-1">
-                <p><strong>Category:</strong> {productData.category}</p>
-                <p><strong>Brand:</strong> {productData.brandCategory}</p>
-                <p><strong>Quantity:</strong> {productData.quantity}</p>
+                <p>
+                  <strong>Category:</strong> {productData.category}
+                </p>
+                <p>
+                  <strong>Brand:</strong> {productData.brandCategory}
+                </p>
+                <p>
+                  <strong>Quantity:</strong> {productData.quantity}
+                </p>
               </div>
             )}
 
@@ -166,7 +178,10 @@ const Product = () => {
               transition={{ duration: 0.5 }}
             >
               <p className="text-2xl sm:text-3xl font-semibold text-[#03045E]">
-                Featured <span className="text-[#00B4D8]">{isPaintProduct ? "Paint Products" : "Products"}</span>
+                Featured{" "}
+                <span className="text-[#00B4D8]">
+                  {isPaintProduct ? "Paint Products" : "Products"}
+                </span>
               </p>
               <div className="w-28 h-0.5 bg-[#FFD60A] mt-2"></div>
             </motion.div>
@@ -201,23 +216,24 @@ const Product = () => {
                 <div
                   key={i}
                   className="relative bg-[#00B4D8]/10 border border-[#00B4D8]/30 rounded-xl overflow-hidden group flex justify-center items-center"
-                  style={{ width: "100%", maxWidth: "1200px", height: "500px" }} // increased height
+                  style={{ width: "100%", maxWidth: "1200px", height: "500px" }}
                 >
                   <Image
                     src={img}
                     alt={`Shade ${i + 1}`}
                     width={1200}
                     height={1000}
-                    className="object-contain w-full h-full transform transition-transform duration-500 group-hover:scale-200" // increased zoom
+                    className="object-contain w-full h-full transform transition-transform duration-500 group-hover:scale-200"
                   />
                 </div>
               ))}
             </div>
 
             <p className="text-[#03045E]/70 text-center text-sm sm:text-lg mt-4">
-              Enter the right number or else your order will be rejected
+              Enter the correct shade number and select the quantity type.
             </p>
 
+            {/* Shade Input */}
             <input
               type="text"
               placeholder="Enter Shade Number"
@@ -225,6 +241,18 @@ const Product = () => {
               onChange={(e) => setShadeNumber(e.target.value)}
               className="w-full sm:w-1/2 border border-[#00B4D8] px-4 py-3 rounded-lg mt-6 outline-none focus:ring-2 focus:ring-[#FFD60A] text-center text-lg text-[#03045E]"
             />
+
+            {/* Quantity Type Selector */}
+            <select
+              value={quantityType}
+              onChange={(e) => setQuantityType(e.target.value)}
+              className="w-full sm:w-1/2 border border-[#00B4D8] px-4 py-3 rounded-lg mt-4 outline-none focus:ring-2 focus:ring-[#FFD60A] text-center text-lg text-[#03045E]"
+            >
+              <option value="">Select Quantity Type</option>
+              <option value="Drum">Drum</option>
+              <option value="Quarter">Quarter</option>
+              <option value="Gallon">Gallon</option>
+            </select>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-8 mb-6 w-full sm:w-auto">
               <button

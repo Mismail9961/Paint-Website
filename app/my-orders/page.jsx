@@ -92,16 +92,28 @@ const MyOrders = () => {
                       {order.items.map((item, i) => {
                         const product = item.paintProduct || item.product;
                         const productName = product?.name || "Product";
+                        const isPaintProduct = !!item.paintProduct;
                         const hasShade = item.shadeNumber && item.shadeNumber !== "N/A";
+                        const quantityType = item.quantityType || "Gallon";
+                        
                         return (
                           <div key={i}>
                             <span className="font-medium text-[#0a9396] block leading-tight">
                               {productName}
                             </span>
-                            <span className="text-black/70 text-sm">
-                              {hasShade ? `Shade: ${item.shadeNumber} × ` : "Quantity: "}
-                              {item.quantity}
+                            
+                            {/* Show shade for paint products */}
+                            {isPaintProduct && hasShade && (
+                              <span className="text-black/70 text-sm block">
+                                Shade: {item.shadeNumber}
+                              </span>
+                            )}
+                            
+                            {/* Show quantity with type for paint products */}
+                            <span className="text-black/70 text-sm block">
+                              Quantity: {item.quantity} {isPaintProduct ? quantityType : ""}
                             </span>
+                            
                             <span className="text-[#0a9396] text-sm block">
                               Price: {currency}
                               {item.offerPrice || item.price}

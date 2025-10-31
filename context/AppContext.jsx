@@ -80,6 +80,7 @@ export const AppContextProvider = ({ children }) => {
             newCart[id] = {
               quantity: item.quantity || 1,
               shadeNumber: item.shadeNumber || "",
+              quantityType: item.quantityType || "Gallon", // ✅ Added
             };
           } catch (e) {
             console.warn("⚠️ Skipped invalid cart item", item);
@@ -107,6 +108,7 @@ export const AppContextProvider = ({ children }) => {
           productId: id,
           quantity: item.quantity,
           shadeNumber: item.shadeNumber || "",
+          quantityType: item.quantityType || "Gallon", // ✅ Added
         }));
 
       if (!cartArray.length) return;
@@ -139,6 +141,7 @@ export const AppContextProvider = ({ children }) => {
         [productId]: {
           quantity: existing ? existing.quantity + 1 : 1,
           shadeNumber: extra.shadeNumber || existing?.shadeNumber || "",
+          quantityType: extra.quantityType || existing?.quantityType || "Gallon", // ✅ Added
         },
       };
       user && syncCartToServer(updated);
@@ -165,6 +168,21 @@ export const AppContextProvider = ({ children }) => {
       if (quantity > 0)
         updated[productId] = { ...prev[productId], quantity };
       else delete updated[productId];
+      user && syncCartToServer(updated);
+      return updated;
+    });
+  };
+
+  // ✅ Update quantity type (New)
+  const updateQuantityType = (productId, quantityType) => {
+    setCartItems((prev) => {
+      const updated = {
+        ...prev,
+        [productId]: {
+          ...prev[productId],
+          quantityType,
+        },
+      };
       user && syncCartToServer(updated);
       return updated;
     });
@@ -214,6 +232,7 @@ export const AppContextProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         updateCartQuantity,
+        updateQuantityType, // ✅ Added
         getCartCount,
         getCartAmount,
         setCartItems,
@@ -225,4 +244,3 @@ export const AppContextProvider = ({ children }) => {
 };
 
 export default AppContextProvider;
-
